@@ -21,6 +21,7 @@ This project ingests NHL team/game data, engineers matchup-level features, and t
    PYTHONPATH=src .venv/bin/python -m nhl_prediction.train
    ```
    - Trains on seasons `20212022` + `20222023`, evaluates on `20232024`.
+   - Automatically tunes logistic-regression regularisation on the penultimate season and keeps a calibrated 0.500 decision threshold for clean out-of-sample metrics.
    - Outputs accuracy, log loss, Brier score, ROC-AUC.
 
 ## What The Pipeline Does
@@ -38,8 +39,48 @@ This project ingests NHL team/game data, engineers matchup-level features, and t
    - Reports metrics vs. majority-class baseline.
 
 ## Extending / Predicting Future Games
-- Call `build_dataset` with additional seasons (e.g. the upcoming season) to extend training data.
-- For upcoming games not yet recorded, fetch the season-to-date logs up to the day prior, engineer features, and feed the model.
+- The pipeline always reaches out to the NHL Stats API, so rerunning `build_dataset` automatically incorporates the latest completed games for requested seasons.
+- To evaluate different historical windows, pass custom season lists (e.g., `["20192020", "20202021", "20212022"]`).
+- For upcoming games, fetch logs after the latest day of play and score the matchups before puck drop (see “Predicting the Next Slate” below).
 
 ## Visualization Options
 See `src/nhl_prediction/report.py` (explained next) for producing CSV outputs and charts that non-technical stakeholders can review.
+
+### Interactive Dashboard (Streamlit)
+1. Install dependencies (as above) and ensure the `.venv` is active.
+2. Launch the dashboard:
+   ```bash
+   PYTHONPATH=src streamlit run streamlit_app.py
+   ```
+3. Within the app you can:
+   - Pick training/test seasons and instantly retrain the baseline model.
+   - Review key feature effects that drive the predicted odds.
+   - Filter and export game-level probabilities for the evaluation season.
+
+Refresh or rerun the dashboard after new NHL games conclude so the latest logs are available for prediction.
+
+## Generate Shareable Reports
+1. Run the reporting CLI:
+   ```bash
+   PYTHONPATH=src .venv/bin/python -m nhl_prediction.report
+   ```
+2. Outputs (default `reports/` directory):
+   - `predictions_<season>.csv`: probabilities, outcomes, and key matchup features.
+   - `feature_importance.csv`: top coefficient impacts after de-standardisation.
+   - `roc_curve.png`, `calibration_curve.png`, `confusion_matrix.png`: slide-ready visuals.
+3. Adjust seasons with `--train-seasons` / `--test-season` flags to tailor the evaluation view.
+
+## Predicting the Next Slate
+1. Ensure the NHL Stats API has published the most recent game logs (usually available the morning after games).
+2. Update the hold-out season to the current year and rerun either:
+   ```bash
+   PYTHONPATH=src .venv/bin/python -m nhl_prediction.train --test-season 20242025
+   ```
+   or launch the Streamlit app and select the new season in the sidebar.
+3. For **future** games on today’s schedule, export the latest predictions (`report` or Streamlit download) and filter to upcoming matchups.
+4. Optionally checkpoint the model to disk (via `joblib.dump`) to serve predictions without refetching data each time.
+
+## Automation Tips
+- Use a cron job or CI workflow to run the reporting CLI daily during the regular season.
+- Commit generated reports or push them to shared storage so analysts always have the newest probabilities.
+- Pair the CSV output with betting lines or fantasy projections for richer downstream analyses.

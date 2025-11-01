@@ -13,14 +13,16 @@ import pandas as pd
 import typer
 from rich.console import Console
 from sklearn.calibration import calibration_curve
-from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix, roc_curve
+from sklearn.metrics import ConfusionMatrixDisplay, accuracy_score, confusion_matrix, roc_curve
 
 from .model import (
+    calibrate_threshold,
     compute_feature_effects,
     compute_metrics,
     create_baseline_model,
     fit_model,
     predict_probabilities,
+    tune_logreg_c,
 )
 from .pipeline import Dataset, build_dataset
 
@@ -70,10 +72,9 @@ def _plot_calibration(y_true, y_prob, path: Path) -> None:
     plt.close()
 
 
-def _plot_confusion(y_true, y_prob, path: Path) -> None:
-    y_pred = (y_prob >= 0.5).astype(int)
-    cm = confusion_matrix(y_true, y_pred)
-    disp = ConfusionMatrixDisplay(cm, display_labels=["Away Win", "Home Win"])
+def _plot_confusion(y_true, y_prob, threshold: float, path: Path) -> None:
+    y_pred = (y_prob >= threshold).astype(int)
+    disp = ConfusionMatrixDisplay(confusion_matrix(y_true, y_pred), display_labels=["Away Win", "Home Win"])
     fig, ax = plt.subplots(figsize=(5, 5))
     disp.plot(ax=ax, cmap="Blues", values_format="d", colorbar=False)
     ax.set_title("Confusion Matrix @ 0.5 Threshold")
@@ -82,10 +83,12 @@ def _plot_confusion(y_true, y_prob, path: Path) -> None:
     plt.close(fig)
 
 
-def _save_predictions(dataset: Dataset, probs: pd.Series, mask: pd.Series, output_path: Path) -> None:
+def _save_predictions(
+    dataset: Dataset, probs: pd.Series, mask: pd.Series, threshold: float, output_path: Path
+) -> None:
     games = dataset.games.loc[mask].copy()
     games["home_win_probability"] = probs
-    games["predicted_home_win"] = (probs >= 0.5).astype(int)
+    games["predicted_home_win"] = (probs >= threshold).astype(int)
     games["correct"] = games["predicted_home_win"] == games["home_win"]
 
     columns = [
@@ -137,7 +140,21 @@ def report(
     if train_mask.sum() == 0 or test_mask.sum() == 0:
         raise typer.BadParameter("Insufficient games for the provided seasons.")
 
-    model = create_baseline_model()
+    candidate_cs = [0.03, 0.05, 0.1, 0.3, 0.5, 1.0, 2.0, 3.0]
+    best_c = tune_logreg_c(candidate_cs, features, target, games, train_ids)
+    threshold, val_acc, calibrator = calibrate_threshold(best_c, features, target, games, train_ids)
+    decision_threshold = 0.5
+
+    console.log(f"Selected logistic regression C={best_c}")
+    if val_acc is not None:
+        console.log(
+            f"Validation suggested threshold {threshold:.3f} (validation accuracy {val_acc:.3f}); "
+            "reports retain 0.500 for out-of-sample comparability."
+        )
+    else:
+        console.log("Using default 0.500 decision threshold")
+
+    model = create_baseline_model(C=best_c)
     model = fit_model(model, features, target, train_mask)
 
     train_probs = predict_probabilities(model, features, train_mask)
@@ -145,6 +162,13 @@ def report(
 
     train_metrics = compute_metrics(target.loc[train_mask], train_probs)
     test_metrics = compute_metrics(target.loc[test_mask], test_probs)
+
+    train_metrics["accuracy"] = accuracy_score(
+        target.loc[train_mask], (train_probs >= decision_threshold).astype(int)
+    )
+    test_metrics["accuracy"] = accuracy_score(
+        target.loc[test_mask], (test_probs >= decision_threshold).astype(int)
+    )
 
     console.print("[bold]Metrics[/bold]")
     console.print(f"Train – Accuracy {train_metrics['accuracy']:0.3f}, LogLoss {train_metrics['log_loss']:0.3f}, "
@@ -155,12 +179,18 @@ def report(
     out_dir = _ensure_dir(output_dir)
     console.log(f"Saving outputs to {out_dir}")
 
-    _save_predictions(dataset, pd.Series(test_probs, index=target.loc[test_mask].index), test_mask, out_dir / f"predictions_{test_id}.csv")
+    _save_predictions(
+        dataset,
+        pd.Series(test_probs, index=target.loc[test_mask].index),
+        test_mask,
+        decision_threshold,
+        out_dir / f"predictions_{test_id}.csv",
+    )
     _save_feature_effects(model, features.columns, out_dir / "feature_importance.csv")
 
     _plot_roc(target.loc[test_mask], test_probs, out_dir / "roc_curve.png")
     _plot_calibration(target.loc[test_mask], test_probs, out_dir / "calibration_curve.png")
-    _plot_confusion(target.loc[test_mask], test_probs, out_dir / "confusion_matrix.png")
+    _plot_confusion(target.loc[test_mask], test_probs, decision_threshold, out_dir / "confusion_matrix.png")
 
     console.log("Report generation complete.")
 

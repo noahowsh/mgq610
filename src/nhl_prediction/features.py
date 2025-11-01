@@ -2,15 +2,22 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import numpy as np
 import pandas as pd
 
+ROLL_WINDOWS: Sequence[int] = (3, 5, 10)
 
-def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = (5, 10)) -> pd.DataFrame:
-    """Add pre-game team features using expanding and rolling statistics."""
+
+def _lagged_rolling(group: pd.Series, window: int, min_periods: int = 1) -> pd.Series:
+    return group.shift(1).rolling(window, min_periods=min_periods).mean()
+
+
+def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = ROLL_WINDOWS) -> pd.DataFrame:
+    """Create lagged features using only information available prior to each game."""
     logs = logs.copy()
+
     numeric_columns = [
         "goalsFor",
         "goalsAgainst",
@@ -19,48 +26,131 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
         "shotsForPerGame",
         "shotsAgainstPerGame",
         "faceoffWinPct",
+        "wins",
+        "losses",
+        "otLosses",
+        "regulationAndOtWins",
+        "winsInRegulation",
+        "winsInShootout",
+        "points",
+        "pointPct",
     ]
     for column in numeric_columns:
         logs[column] = pd.to_numeric(logs[column], errors="coerce")
 
     logs["goal_diff"] = logs["goalsFor"] - logs["goalsAgainst"]
-    logs["win"] = (logs["goalsFor"] > logs["goalsAgainst"]).astype(int)
+    logs["win"] = (logs["goal_diff"] > 0).astype(int)
 
     logs.sort_values(["teamId", "seasonId", "gameDate", "gameId"], inplace=True)
 
     group = logs.groupby(["teamId", "seasonId"], sort=False)
     logs["games_played_prior"] = group.cumcount()
 
-    wins_cumsum = group["win"].cumsum()
-    goal_diff_cumsum = group["goal_diff"].cumsum()
-
     denom = logs["games_played_prior"].replace(0, np.nan)
-    logs["season_win_pct"] = wins_cumsum.shift(1) / denom
-    logs["season_goal_diff_avg"] = goal_diff_cumsum.shift(1) / denom
+    logs["season_win_pct"] = group["win"].cumsum().shift(1) / denom
+    logs["season_goal_diff_avg"] = group["goal_diff"].cumsum().shift(1) / denom
 
-    logs["days_since_last_game"] = group["gameDate"].diff().dt.days
+    # Rest metrics
+    logs["rest_days"] = group["gameDate"].diff().dt.days
+    logs["is_b2b"] = logs["rest_days"].fillna(10).le(1).astype(int)
 
-    def _rolling_mean(series: pd.Series, window: int) -> pd.Series:
-        return series.shift(1).rolling(window, min_periods=1).mean()
+    # Rolling statistics
+    roll_features: dict[str, pd.Series] = {}
+    for window in rolling_windows:
+        roll_features[f"rolling_win_pct_{window}"] = group["win"].transform(
+            lambda s, w=window: _lagged_rolling(s, w)
+        )
+        roll_features[f"rolling_goal_diff_{window}"] = group["goal_diff"].transform(
+            lambda s, w=window: _lagged_rolling(s, w)
+        )
+        roll_features[f"rolling_pp_pct_{window}"] = group["powerPlayPct"].transform(
+            lambda s, w=window: _lagged_rolling(s, w)
+        ) / 100.0
+        roll_features[f"rolling_pk_pct_{window}"] = group["penaltyKillPct"].transform(
+            lambda s, w=window: _lagged_rolling(s, w)
+        ) / 100.0
+        roll_features[f"rolling_faceoff_{window}"] = group["faceoffWinPct"].transform(
+            lambda s, w=window: _lagged_rolling(s, w)
+        ) / 100.0
+        roll_features[f"shotsFor_roll_{window}"] = group["shotsForPerGame"].transform(
+            lambda s, w=window: _lagged_rolling(s, w)
+        )
+        roll_features[f"shotsAgainst_roll_{window}"] = group["shotsAgainstPerGame"].transform(
+            lambda s, w=window: _lagged_rolling(s, w)
+        )
+
+    logs = logs.assign(**roll_features)
+
+    # Shot margin trends
+    logs["shot_margin"] = logs["shotsForPerGame"] - logs["shotsAgainstPerGame"]
+    team_group = logs.groupby(["teamId", "seasonId"], sort=False)
+    logs["shot_margin_last_game"] = team_group["shot_margin"].shift(1)
+    logs["season_shot_margin"] = team_group["shot_margin"].transform(
+        lambda s: s.shift(1).expanding(min_periods=1).mean()
+    )
+
+    logs["momentum_win_pct"] = logs["rolling_win_pct_5"] - logs["season_win_pct"]
+    logs["momentum_goal_diff"] = logs["rolling_goal_diff_5"] - logs["season_goal_diff_avg"]
+    logs["momentum_shot_margin"] = logs["shot_margin_last_game"] - logs["season_shot_margin"]
+
+    # Team strength prior to the current game
+    logs["wins_prior"] = group["wins"].shift(1)
+    logs["losses_prior"] = group["losses"].shift(1)
+    logs["ot_losses_prior"] = group["otLosses"].shift(1)
+    logs["reg_ot_wins_prior"] = group["regulationAndOtWins"].shift(1)
+    logs["wins_reg_prior"] = group["winsInRegulation"].shift(1)
+    logs["wins_so_prior"] = group["winsInShootout"].shift(1)
+    logs["points_prior"] = group["points"].shift(1)
+    logs["point_pct_prior"] = group["pointPct"].shift(1)
+    logs["points_per_game_prior"] = logs["points_prior"] / (logs["games_played_prior"].replace(0, np.nan) * 2)
+
+    # Schedule congestion indicators
+    gap = logs.groupby("teamId", sort=False)["rest_days"]
+    recent_one_day = gap.transform(lambda s: s.fillna(10).le(1).astype(int))
+    logs["games_last_3d"] = (recent_one_day + recent_one_day.shift(1).fillna(0)).clip(0, 3)
+    recent_two_day = gap.transform(lambda s: s.fillna(10).le(2).astype(int))
+    logs["games_last_6d"] = (
+        recent_two_day
+        + recent_two_day.shift(1).fillna(0)
+        + recent_two_day.shift(2).fillna(0)
+        + recent_two_day.shift(3).fillna(0)
+    ).clip(0, 4)
+
+    feature_cols = [
+        "season_win_pct",
+        "season_goal_diff_avg",
+        "season_shot_margin",
+        "shot_margin_last_game",
+        "momentum_win_pct",
+        "momentum_goal_diff",
+        "momentum_shot_margin",
+        "wins_prior",
+        "losses_prior",
+        "ot_losses_prior",
+        "reg_ot_wins_prior",
+        "wins_reg_prior",
+        "wins_so_prior",
+        "points_prior",
+        "point_pct_prior",
+        "points_per_game_prior",
+        "rest_days",
+        "is_b2b",
+        "games_last_3d",
+        "games_last_6d",
+    ]
 
     for window in rolling_windows:
-        logs[f"rolling_win_pct_{window}"] = group["win"].transform(lambda s, w=window: _rolling_mean(s, w))
-        logs[f"rolling_goal_diff_{window}"] = group["goal_diff"].transform(lambda s, w=window: _rolling_mean(s, w))
-        logs[f"rolling_pp_pct_{window}"] = (
-            group["powerPlayPct"].transform(lambda s, w=window: _rolling_mean(s, w)) / 100.0
+        feature_cols.extend(
+            [
+                f"rolling_win_pct_{window}",
+                f"rolling_goal_diff_{window}",
+                f"rolling_pp_pct_{window}",
+                f"rolling_pk_pct_{window}",
+                f"rolling_faceoff_{window}",
+                f"shotsFor_roll_{window}",
+                f"shotsAgainst_roll_{window}",
+            ]
         )
-        logs[f"rolling_pk_pct_{window}"] = (
-            group["penaltyKillPct"].transform(lambda s, w=window: _rolling_mean(s, w)) / 100.0
-        )
-        logs[f"rolling_faceoff_{window}"] = group["faceoffWinPct"].transform(lambda s, w=window: _rolling_mean(s, w))
 
-    shot_attempt_margin = logs["shotsForPerGame"] - logs["shotsAgainstPerGame"]
-    logs["shot_margin_last_game"] = shot_attempt_margin.shift(1)
-    avg_shots_for = group["shotsForPerGame"].transform(lambda s: s.shift().expanding(min_periods=1).mean())
-    avg_shots_against = group["shotsAgainstPerGame"].transform(lambda s: s.shift().expanding(min_periods=1).mean())
-    logs["season_shot_margin"] = avg_shots_for - avg_shots_against
-
-    # Replace inf coming from division by zero when no prior games exist.
-    logs.replace([np.inf, -np.inf], np.nan, inplace=True)
-
+    logs[feature_cols] = logs[feature_cols].fillna(0.0)
     return logs
