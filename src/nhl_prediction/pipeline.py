@@ -35,19 +35,15 @@ def build_dataset(seasons: Iterable[str]) -> Dataset:
         "momentum_win_pct",
         "momentum_goal_diff",
         "momentum_shot_margin",
-        "wins_prior",
-        "losses_prior",
-        "ot_losses_prior",
-        "reg_ot_wins_prior",
-        "wins_reg_prior",
-        "wins_so_prior",
-        "points_prior",
-        "point_pct_prior",
-        "points_per_game_prior",
         "rest_days",
         "is_b2b",
         "games_last_3d",
         "games_last_6d",
+        # NEW: xGoals season averages
+        "season_xg_for_avg",
+        "season_xg_against_avg",
+        "season_xg_diff_avg",
+        "momentum_xg",
     ]
 
     for window in rolling_windows:
@@ -55,11 +51,21 @@ def build_dataset(seasons: Iterable[str]) -> Dataset:
             [
                 f"rolling_win_pct_{window}",
                 f"rolling_goal_diff_{window}",
-                f"rolling_pp_pct_{window}",
-                f"rolling_pk_pct_{window}",
                 f"rolling_faceoff_{window}",
                 f"shotsFor_roll_{window}",
                 f"shotsAgainst_roll_{window}",
+                # NEW: xGoals rolling windows
+                f"rolling_xg_for_{window}",
+                f"rolling_xg_against_{window}",
+                f"rolling_xg_diff_{window}",
+                # NEW: Possession metrics
+                f"rolling_corsi_{window}",
+                f"rolling_fenwick_{window}",
+                # NEW: High danger shots
+                f"rolling_high_danger_shots_{window}",
+                # NEW: Goaltending metrics
+                f"rolling_save_pct_{window}",
+                f"rolling_gsax_{window}",
             ]
         )
 
@@ -91,18 +97,9 @@ def build_dataset(seasons: Iterable[str]) -> Dataset:
         if feat in games.columns:
             feature_columns.append(feat)
 
-    # Situational features that mix home vs away metrics.
-    game_columns = set(games.columns)
-    if {"rolling_pp_pct_5_home", "rolling_pk_pct_5_away"} <= game_columns:
-        games["special_teams_matchup"] = (
-            games["rolling_pp_pct_5_home"] - games["rolling_pk_pct_5_away"]
-        )
-        feature_columns.append("special_teams_matchup")
-    if {"rolling_pp_pct_5_away", "rolling_pk_pct_5_home"} <= game_columns:
-        games["special_teams_matchup_inverse"] = (
-            games["rolling_pk_pct_5_home"] - games["rolling_pp_pct_5_away"]
-        )
-        feature_columns.append("special_teams_matchup_inverse")
+    # NOTE: Special teams matchup features removed because MoneyPuck doesn't provide
+    # game-by-game PP%/PK%. Would need season-long calculation which isn't accurate.
+    # xGoals features provide better shot quality signal anyway.
 
     # Rest-based features.
     def _rest_bucket(days: float) -> str:

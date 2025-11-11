@@ -29,8 +29,9 @@ console = Console()
 
 
 def _resolve_seasons(train_seasons: List[str] | None, test_season: str | None) -> tuple[List[str], str]:
-    default_train = ["20212022", "20222023"]
-    default_test = "20232024"
+    # Updated: Train on 2021-2024 (4 full seasons, skip 2020 COVID), validate on 2024-2025
+    default_train = ["20212022", "20222023", "20232024"]
+    default_test = "20242025"
     train = train_seasons or default_train
     test = test_season or default_test
     if test in train:

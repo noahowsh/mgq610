@@ -2,6 +2,14 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+# Add src directory to Python path
+src_path = Path(__file__).parent / "src"
+if str(src_path) not in sys.path:
+    sys.path.insert(0, str(src_path))
+
 from typing import Dict, List, Tuple
 
 import altair as alt
@@ -258,6 +266,6 @@ csv_data = filtered.to_csv(index=False).encode("utf-8")
 st.download_button("Download Filtered Predictions (CSV)", csv_data, "predictions.csv", "text/csv")
 
 st.info(
-    "To apply the model to upcoming games, rerun the prediction pipeline once the NHL Stats API publishes the latest game logs. "
-    "This ensures features remain up to date before generating probabilities."
+    "To apply the model to upcoming games, download the latest MoneyPuck data and rerun the prediction pipeline. "
+    "Update data/moneypuck_all_games.csv from https://moneypuck.com/ to ensure features include the most recent games."
 )

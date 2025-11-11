@@ -1,0 +1,45 @@
+
+NHL PREDICTION MODEL - VISUALIZATION SUMMARY
+============================================
+
+DATA OVERVIEW:
+- Total predictions analyzed: 1,230
+- Date range: 2023-10-10 to 2024-04-18
+- MoneyPuck data: 220,790 records
+
+MODEL PERFORMANCE:
+- Overall Accuracy: 0.568 (56.8%)
+- Brier Score: 0.2435
+- Games where model was correct: 699 / 1,230
+
+HOME/AWAY ANALYSIS:
+- Predicted home win rate: 0.494
+- Actual home win rate: 0.499
+- Model accuracy on home predictions: 0.567
+- Model accuracy on away predictions: 0.570
+
+CONFIDENCE ANALYSIS:
+- Average model confidence: 0.233
+- High confidence games (>0.7): 3
+- Low confidence games (<0.3): 827
+
+VISUALIZATIONS CREATED:
+1. Prediction Confidence vs Accuracy Analysis
+   - Confidence distribution, binned accuracy, calibration curves, margin analysis
+   
+2. Expected Goals (xGoals) Analysis
+   - xGF vs actual goals, xGA vs actual goals, goal differentials, over/under performance
+   
+3. Model Performance Over Time
+   - Rolling accuracy, Brier score evolution, monthly patterns, cumulative metrics
+   
+4. Team Performance Heatmap
+   - Team-level metrics, predicted vs actual win rates, calibration by team
+   
+5. Home Ice Advantage Analysis
+   - Home/away win rates, team-specific advantages, model prediction accuracy, monthly trends
+   
+6. Advanced Statistics Correlation
+   - Correlation matrix, possession metrics, xGoals impact, high danger shots analysis
+
+All visualizations saved to: /Users/noahowsiany/Desktop/Predictive Model 3.3/NHLpredictionmodel/reports/visualizations
