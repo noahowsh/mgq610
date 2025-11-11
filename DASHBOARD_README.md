@@ -135,9 +135,9 @@ python predict_full.py
 ## 💡 Pro Tips
 
 1. **Generate predictions before opening dashboard**
-   ```bash
+```bash
    python predict_full.py && streamlit run dashboard.py
-   ```
+```
 
 2. **Leave dashboard running all day**
    - It auto-updates predictions every 10 minutes
