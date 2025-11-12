@@ -71,6 +71,19 @@ const biggestSlide = rankedRows.reduce<LeaderboardRow | null>((best, row) => {
 
 const alignedClubs = rankedRows.filter((row) => Math.abs(row.movement) <= 1).length;
 
+const computeWeekStart = (anchor: Date) => {
+  const base = new Date(anchor);
+  const day = base.getUTCDay();
+  const diff = (day + 6) % 7;
+  base.setUTCDate(base.getUTCDate() - diff);
+  base.setUTCHours(0, 0, 0, 0);
+  return base;
+};
+
+const weekAnchor = standingsMeta.generatedAt ? new Date(standingsMeta.generatedAt) : new Date();
+const leaderboardWeekStart = computeWeekStart(weekAnchor);
+const leaderboardWeekLabel = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(leaderboardWeekStart);
+
 const leaderboardHighlights = [
   {
     label: "Power #1",
@@ -101,19 +114,6 @@ const formatGameDate = (iso?: string) => {
   if (!iso) return "TBD";
   return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(`${iso}T00:00:00Z`));
 };
-
-const computeWeekStart = (anchor: Date) => {
-  const base = new Date(anchor);
-  const day = base.getUTCDay();
-  const diff = (day + 6) % 7;
-  base.setUTCDate(base.getUTCDate() - diff);
-  base.setUTCHours(0, 0, 0, 0);
-  return base;
-};
-
-const weekAnchor = standingsMeta.generatedAt ? new Date(standingsMeta.generatedAt) : new Date();
-const leaderboardWeekStart = computeWeekStart(weekAnchor);
-const leaderboardWeekLabel = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(leaderboardWeekStart);
 
 export default function LeaderboardsPage() {
   return (

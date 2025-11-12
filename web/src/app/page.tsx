@@ -34,6 +34,31 @@ const powerStandings = liveStandings
 const powerLeaders = powerStandings.slice(0, 6);
 const bankrollPreview = modelInsights.bankrollSeries.slice(-12);
 
+const scheduleWindowDates = Array.from(new Set(predictionsPayload.games.map((game) => game.gameDate)))
+  .filter((date): date is string => Boolean(date))
+  .sort()
+  .slice(0, 7);
+
+type StressEntry = { team: string; abbrev: string; games: number };
+const scheduleStressMap = new Map<string, StressEntry>();
+
+const trackStress = (teamName: string, abbrev: string) => {
+  if (!scheduleStressMap.has(abbrev)) {
+    scheduleStressMap.set(abbrev, { team: teamName, abbrev, games: 0 });
+  }
+  scheduleStressMap.get(abbrev)!.games += 1;
+};
+
+predictionsPayload.games.forEach((game) => {
+  if (!game.gameDate || !scheduleWindowDates.includes(game.gameDate)) return;
+  trackStress(game.homeTeam.name, game.homeTeam.abbrev);
+  trackStress(game.awayTeam.name, game.awayTeam.abbrev);
+});
+
+const scheduleStressLeaders = Array.from(scheduleStressMap.values())
+  .sort((a, b) => b.games - a.games || a.team.localeCompare(b.team))
+  .slice(0, 4);
+
 const updatedTimestamp = predictionsPayload.generatedAt ? new Date(predictionsPayload.generatedAt) : null;
 const updatedDisplay = updatedTimestamp
   ? new Intl.DateTimeFormat("en-US", {
@@ -51,19 +76,18 @@ const formatShortDate = (iso?: string | null) => {
   return shortDateFormatter.format(new Date(`${iso}T00:00:00Z`));
 };
 
-const computeWeekStart = (date: Date) => {
-  const copy = new Date(date);
-  const day = copy.getUTCDay();
+const computeWeekStart = (anchor: Date) => {
+  const base = new Date(anchor);
+  const day = base.getUTCDay();
   const diff = (day + 6) % 7;
-  copy.setUTCDate(copy.getUTCDate() - diff);
-  copy.setUTCHours(0, 0, 0, 0);
-  return copy;
+  base.setUTCDate(base.getUTCDate() - diff);
+  base.setUTCHours(0, 0, 0, 0);
+  return base;
 };
 
 const weeklyAnchor = standingsMeta.generatedAt ? new Date(standingsMeta.generatedAt) : updatedTimestamp ?? new Date();
 const weekStartDate = computeWeekStart(weeklyAnchor);
 const weekStartDisplay = shortDateFormatter.format(weekStartDate);
-
 
 const methodology = [
   {
@@ -118,6 +142,27 @@ const heroHighlights = [
     label: "Accuracy lift",
     value: `+${((modelInsights.overall.accuracy - modelInsights.overall.baseline) * 100).toFixed(1)} pts`,
     detail: "vs home baseline",
+  },
+];
+
+const weeklyAccuracyMetrics = [
+  {
+    label: "Model accuracy",
+    value: pct(modelInsights.overall.accuracy),
+    detail: "Week of " + weekStartDisplay,
+    progress: modelInsights.overall.accuracy,
+  },
+  {
+    label: "Baseline",
+    value: pct(modelInsights.overall.baseline),
+    detail: "Always pick home",
+    progress: modelInsights.overall.baseline,
+  },
+  {
+    label: "Avg edge",
+    value: `${(modelInsights.overall.avgEdge * 100).toFixed(1)} pts`,
+    detail: "Mean |p-0.5|",
+    progress: Math.min(modelInsights.overall.avgEdge * 2, 1),
   },
 ];
 
@@ -261,6 +306,48 @@ export default function Home() {
               </div>
             </div>
             <PredictionTicker initial={predictionsPayload} />
+          </section>
+
+          <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="rounded-[36px] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30">
+              <p className="text-sm uppercase tracking-[0.4em] text-lime-300">Weekly accuracy tracker</p>
+              <div className="mt-6 grid gap-4 sm:grid-cols-3">
+                {weeklyAccuracyMetrics.map((metric) => (
+                  <div key={metric.label} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-xs uppercase tracking-[0.4em] text-white/50">{metric.label}</p>
+                    <p className="mt-2 text-2xl font-semibold text-white">{metric.value}</p>
+                    <p className="text-[0.6rem] uppercase tracking-[0.4em] text-white/60">{metric.detail}</p>
+                    <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-lime-300 via-emerald-400 to-cyan-300"
+                        style={{ width: `${Math.min(metric.progress * 100, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-[36px] border border-white/10 bg-gradient-to-br from-black/30 via-slate-900/60 to-slate-950 p-6 shadow-2xl shadow-black/30">
+              <p className="text-sm uppercase tracking-[0.4em] text-lime-300">Schedule stress meter</p>
+              <p className="mt-2 text-sm text-white/70">Busiest slates over the next week (model input window)</p>
+              <ul className="mt-5 space-y-3">
+                {scheduleStressLeaders.length ? (
+                  scheduleStressLeaders.map((entry) => (
+                    <li key={entry.abbrev} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+                      <div className="flex items-center justify-between text-sm text-white/80">
+                        <span>{entry.team}</span>
+                        <span className="text-xs uppercase tracking-[0.4em] text-lime-200">{entry.games} games</span>
+                      </div>
+                      <p className="text-xs uppercase tracking-[0.4em] text-white/40">Week of {weekStartDisplay}</p>
+                    </li>
+                  ))
+                ) : (
+                  <li className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/70">
+                    Schedule data not available yet.
+                  </li>
+                )}
+              </ul>
+            </div>
           </section>
 
           <section className="rounded-[36px] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/30">
