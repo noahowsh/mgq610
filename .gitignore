@@ -49,6 +49,17 @@ Thumbs.db
 *.tmp
 *.temp
 
+# Node/Next.js artifacts
+node_modules/
+web/node_modules/
+web/.next/
+web/out/
+!web/src/lib/
+!web/src/lib/**
+
 # Local data dumps (keep MoneyPuck CSVs out of git history)
 data/moneypuck_all_games.csv
 data/moneypuck_*.parquet
+
+# Daily prediction exports
+predictions_*.csv

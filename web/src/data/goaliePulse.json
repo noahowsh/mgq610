@@ -1,0 +1,58 @@
+{
+  "updatedAt": "2025-11-11T14:30:00Z",
+  "notes": "Rolling three-game GSAx + rebound control metrics recalculated after morning skate.",
+  "goalies": [
+    {
+      "name": "Jeremy Swayman",
+      "team": "BOS",
+      "rollingGsa": 3.1,
+      "seasonGsa": 12.4,
+      "restDays": 2,
+      "startLikelihood": 0.85,
+      "trend": "surging",
+      "note": "Shutting down slot looks (0.78 xG saved per game) — massive home pillar.",
+      "strengths": ["Elite rebound control", "+0.31 rush save delta"],
+      "watchouts": ["Toronto PP east-west plays"],
+      "nextOpponent": "TOR"
+    },
+    {
+      "name": "Logan Thompson",
+      "team": "VGK",
+      "rollingGsa": 2.4,
+      "seasonGsa": 9.8,
+      "restDays": 1,
+      "startLikelihood": 0.9,
+      "trend": "steady",
+      "note": "Tracks east-west vs NYR top unit, limits rebounds to 1.2 per game last two weeks.",
+      "strengths": ["Glove heat", "PK anchor"],
+      "watchouts": ["Net-front deflections"],
+      "nextOpponent": "NYR"
+    },
+    {
+      "name": "Connor Hellebuyck",
+      "team": "WPG",
+      "rollingGsa": 1.7,
+      "seasonGsa": 10.5,
+      "restDays": 3,
+      "startLikelihood": 0.7,
+      "trend": "fresh",
+      "note": "Jets controlling rebounds but travel + rest advantage makes him tonight's road equalizer.",
+      "strengths": ["First-shot save % 0.933", "Calm puck handling"],
+      "watchouts": ["High blocker"],
+      "nextOpponent": "VAN"
+    },
+    {
+      "name": "Cam Talbot",
+      "team": "LAK",
+      "rollingGsa": 0.6,
+      "seasonGsa": 4.2,
+      "restDays": 0,
+      "startLikelihood": 0.55,
+      "trend": "fatigue watch",
+      "note": "Second leg of a back-to-back; LA will lean on structure but Talbot's post-integration is slipping.",
+      "strengths": ["Reads seam passes"],
+      "watchouts": ["Glove high", "Backdoor tap-ins"],
+      "nextOpponent": "TOR"
+    }
+  ]
+}
