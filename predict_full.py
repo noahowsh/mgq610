@@ -260,6 +260,12 @@ def derive_season_id_from_date(target: datetime) -> str:
     return f"{start_year}{end_year}"
 
 
+def _filter_games_by_date(games, target_date: str) -> list[dict]:
+    """Return only the games scheduled for the target date."""
+    filtered = [game for game in games if game.get("gameDate") == target_date]
+    return filtered
+
+
 def predict_games(date=None, num_games=20):
     """
     Predict NHL games using full model with all features.
@@ -286,20 +292,28 @@ def predict_games(date=None, num_games=20):
     
     # Step 1: Fetch games
     print(f"\n1️⃣  Fetching games for {date_str}...")
-    
+
     if date is None:
         games = fetch_todays_games()
     else:
         games = fetch_future_games(date_str)
-        if not games and target_dt.date() < datetime.now().date():
-            print("   ⚠️  No future games detected — falling back to historical schedule for backfill.")
-            games = fetch_schedule(date_str)
-    
+    if not games and target_dt.date() < datetime.now().date():
+        print("   ⚠️  No future games detected — falling back to historical schedule for backfill.")
+        games = fetch_schedule(date_str)
     if not games:
         print(f"   ℹ️  No games scheduled for {date_str}")
         return []
-    
-    print(f"   ✅ Found {len(games)} games")
+
+    filtered_games = _filter_games_by_date(games, date_str)
+    filtered_count = len(filtered_games)
+    print(f"   ✅ Found {filtered_count} game(s) for {date_str}")
+    if filtered_count == 0:
+        print("   ℹ️  Using the full schedule because no games matched the target date.")
+        games_for_model = games
+    else:
+        if filtered_count != len(games):
+            print(f"   ℹ️  Filtered down from {len(games)} scheduled game(s).")
+        games_for_model = filtered_games
     
     # Step 2: Build dataset
     seasons = recent_seasons(target_dt, count=3)
@@ -345,7 +359,7 @@ def predict_games(date=None, num_games=20):
         print("   ✅ Applied isotonic probability calibration")
     
     # Step 4: Predict
-    print(f"\n4️⃣  Generating predictions for {min(num_games, len(games))} games...")
+    print(f"\n4️⃣  Generating predictions for {min(num_games, len(games_for_model))} games...")
     
     print("\n" + "="*80)
     print("PREDICTIONS")
@@ -355,7 +369,7 @@ def predict_games(date=None, num_games=20):
     eligible_games["seasonId_str"] = eligible_games["seasonId"].astype(str)
     feature_columns = eligible_features.columns
     
-    for i, game in enumerate(games[:num_games], 1):
+    for i, game in enumerate(games_for_model[:num_games], 1):
         home_id = game['homeTeamId']
         away_id = game['awayTeamId']
         home_abbrev = game['homeTeamAbbrev']
