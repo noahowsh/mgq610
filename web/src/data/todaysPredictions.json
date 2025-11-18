@@ -1,465 +1,711 @@
 {
-  "generatedAt": "2025-11-12T18:12:10.070133+00:00",
+  "generatedAt": "2025-11-18T19:42:12.071603+00:00",
   "games": [
     {
-      "id": "2025020265",
-      "gameDate": "2025-11-12",
+      "id": "2025020307",
+      "gameDate": "2025-11-18",
       "startTimeEt": "7:00 PM ET",
-      "startTimeUtc": "2025-11-13T00:00:00+00:00",
-      "homeTeam": {
-        "name": "Lightning",
-        "abbrev": "TBL"
-      },
-      "awayTeam": {
-        "name": "Rangers",
-        "abbrev": "NYR"
-      },
-      "homeWinProb": 0.6023,
-      "awayWinProb": 0.3977,
-      "confidenceScore": 0.205,
-      "confidenceGrade": "B+",
-      "edge": 0.102,
-      "summary": "Lightning project at 60% as the home lean \u2014 a B+-tier edge worth 10.2 pts over a coin flip.",
-      "modelFavorite": "home",
-      "venue": "Benchmark International Arena",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020266",
-      "gameDate": "2025-11-12",
-      "startTimeEt": "7:30 PM ET",
-      "startTimeUtc": "2025-11-13T00:30:00+00:00",
-      "homeTeam": {
-        "name": "Flyers",
-        "abbrev": "PHI"
-      },
-      "awayTeam": {
-        "name": "Oilers",
-        "abbrev": "EDM"
-      },
-      "homeWinProb": 0.3101,
-      "awayWinProb": 0.6899,
-      "confidenceScore": 0.38,
-      "confidenceGrade": "A",
-      "edge": -0.19,
-      "summary": "Oilers project at 69% as the road lean \u2014 an A-tier edge worth 19.0 pts over a coin flip.",
-      "modelFavorite": "away",
-      "venue": "Xfinity Mobile Arena",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020267",
-      "gameDate": "2025-11-12",
-      "startTimeEt": "9:00 PM ET",
-      "startTimeUtc": "2025-11-13T02:00:00+00:00",
-      "homeTeam": {
-        "name": "Mammoth",
-        "abbrev": "UTA"
-      },
-      "awayTeam": {
-        "name": "Sabres",
-        "abbrev": "BUF"
-      },
-      "homeWinProb": 0.6634,
-      "awayWinProb": 0.3366,
-      "confidenceScore": 0.327,
-      "confidenceGrade": "A-",
-      "edge": 0.163,
-      "summary": "Mammoth project at 66% as the home lean \u2014 an A--tier edge worth 16.3 pts over a coin flip.",
-      "modelFavorite": "home",
-      "venue": "Delta Center",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020268",
-      "gameDate": "2025-11-12",
-      "startTimeEt": "9:30 PM ET",
-      "startTimeUtc": "2025-11-13T02:30:00+00:00",
-      "homeTeam": {
-        "name": "Blackhawks",
-        "abbrev": "CHI"
-      },
-      "awayTeam": {
-        "name": "Devils",
-        "abbrev": "NJD"
-      },
-      "homeWinProb": 0.3434,
-      "awayWinProb": 0.6566,
-      "confidenceScore": 0.313,
-      "confidenceGrade": "A-",
-      "edge": -0.157,
-      "summary": "Devils project at 66% as the road lean \u2014 an A--tier edge worth 15.7 pts over a coin flip.",
-      "modelFavorite": "away",
-      "venue": "United Center",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020269",
-      "gameDate": "2025-11-13",
-      "startTimeEt": "7:00 PM ET",
-      "startTimeUtc": "2025-11-14T00:00:00+00:00",
+      "startTimeUtc": "2025-11-19T00:00:00+00:00",
       "homeTeam": {
         "name": "Maple Leafs",
         "abbrev": "TOR"
       },
       "awayTeam": {
-        "name": "Kings",
-        "abbrev": "LAK"
+        "name": "Blues",
+        "abbrev": "STL"
       },
-      "homeWinProb": 0.6054,
-      "awayWinProb": 0.3946,
-      "confidenceScore": 0.211,
-      "confidenceGrade": "B+",
-      "edge": 0.105,
-      "summary": "Maple Leafs project at 61% as the home lean \u2014 a B+-tier edge worth 10.5 pts over a coin flip.",
-      "modelFavorite": "home",
-      "venue": "Scotiabank Arena",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020270",
-      "gameDate": "2025-11-13",
-      "startTimeEt": "7:00 PM ET",
-      "startTimeUtc": "2025-11-14T00:00:00+00:00",
-      "homeTeam": {
-        "name": "Canadiens",
-        "abbrev": "MTL"
-      },
-      "awayTeam": {
-        "name": "Stars",
-        "abbrev": "DAL"
-      },
-      "homeWinProb": 0.3526,
-      "awayWinProb": 0.6474,
-      "confidenceScore": 0.295,
-      "confidenceGrade": "A-",
-      "edge": -0.147,
-      "summary": "Stars project at 65% as the road lean \u2014 an A--tier edge worth 14.7 pts over a coin flip.",
-      "modelFavorite": "away",
-      "venue": "Centre Bell",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020271",
-      "gameDate": "2025-11-13",
-      "startTimeEt": "7:00 PM ET",
-      "startTimeUtc": "2025-11-14T00:00:00+00:00",
-      "homeTeam": {
-        "name": "Senators",
-        "abbrev": "OTT"
-      },
-      "awayTeam": {
-        "name": "Bruins",
-        "abbrev": "BOS"
-      },
-      "homeWinProb": 0.5361,
-      "awayWinProb": 0.4639,
-      "confidenceScore": 0.072,
+      "homeWinProb": 0.4773,
+      "awayWinProb": 0.5227,
+      "confidenceScore": 0.045,
       "confidenceGrade": "C+",
-      "edge": 0.036,
-      "summary": "Senators project at 54% as the home lean \u2014 a C+-tier edge worth 3.6 pts over a coin flip.",
-      "modelFavorite": "home",
-      "venue": "Canadian Tire Centre",
-      "season": "20252026"
+      "edge": -0.023,
+      "summary": "Blues project at 52% as the road lean \u2014 a C+-tier edge worth 2.3 pts over a coin flip. STL PK drag -56.0 pts vs opponent special teams.",
+      "modelFavorite": "away",
+      "venue": "Scotiabank Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 16.0,
+          "opponentPenaltyKillPct": 70.8,
+          "diff": -54.8
+        },
+        "away": {
+          "powerPlayPct": 22.9,
+          "opponentPenaltyKillPct": 78.9,
+          "diff": -56.00000000000001
+        }
+      }
     },
     {
-      "id": "2025020272",
-      "gameDate": "2025-11-13",
+      "id": "2025020308",
+      "gameDate": "2025-11-18",
       "startTimeEt": "7:00 PM ET",
-      "startTimeUtc": "2025-11-14T00:00:00+00:00",
+      "startTimeUtc": "2025-11-19T00:00:00+00:00",
       "homeTeam": {
         "name": "Red Wings",
         "abbrev": "DET"
       },
       "awayTeam": {
-        "name": "Ducks",
-        "abbrev": "ANA"
+        "name": "Kraken",
+        "abbrev": "SEA"
       },
-      "homeWinProb": 0.671,
-      "awayWinProb": 0.329,
-      "confidenceScore": 0.342,
-      "confidenceGrade": "A",
-      "edge": 0.171,
-      "summary": "Red Wings project at 67% as the home lean \u2014 an A-tier edge worth 17.1 pts over a coin flip.",
+      "homeWinProb": 0.6522,
+      "awayWinProb": 0.3478,
+      "confidenceScore": 0.304,
+      "confidenceGrade": "A-",
+      "edge": 0.152,
+      "summary": "Red Wings project at 65% as the home lean \u2014 an A--tier edge worth 15.2 pts over a coin flip. SEA PK drag -62.6 pts vs opponent special teams.",
       "modelFavorite": "home",
       "venue": "Little Caesars Arena",
-      "season": "20252026"
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 20.9,
+          "opponentPenaltyKillPct": 71.2,
+          "diff": -50.300000000000004
+        },
+        "away": {
+          "powerPlayPct": 18.9,
+          "opponentPenaltyKillPct": 81.5,
+          "diff": -62.6
+        }
+      }
     },
     {
-      "id": "2025020273",
-      "gameDate": "2025-11-13",
+      "id": "2025020309",
+      "gameDate": "2025-11-18",
       "startTimeEt": "7:00 PM ET",
-      "startTimeUtc": "2025-11-14T00:00:00+00:00",
+      "startTimeUtc": "2025-11-19T00:00:00+00:00",
       "homeTeam": {
-        "name": "Panthers",
-        "abbrev": "FLA"
+        "name": "Lightning",
+        "abbrev": "TBL"
       },
       "awayTeam": {
-        "name": "Capitals",
-        "abbrev": "WSH"
+        "name": "Devils",
+        "abbrev": "NJD"
       },
-      "homeWinProb": 0.4489,
-      "awayWinProb": 0.5511,
-      "confidenceScore": 0.102,
-      "confidenceGrade": "B-",
-      "edge": -0.051,
-      "summary": "Capitals project at 55% as the road lean \u2014 a B--tier edge worth 5.1 pts over a coin flip.",
+      "homeWinProb": 0.339,
+      "awayWinProb": 0.661,
+      "confidenceScore": 0.322,
+      "confidenceGrade": "A-",
+      "edge": -0.161,
+      "summary": "Devils project at 66% as the road lean \u2014 an A--tier edge worth 16.1 pts over a coin flip. TBL PK drag -69.6 pts vs opponent special teams.",
       "modelFavorite": "away",
-      "venue": "Amerant Bank Arena",
-      "season": "20252026"
+      "venue": "Benchmark International Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 15.3,
+          "opponentPenaltyKillPct": 84.9,
+          "diff": -69.60000000000001
+        },
+        "away": {
+          "powerPlayPct": 25.5,
+          "opponentPenaltyKillPct": 84.7,
+          "diff": -59.2
+        }
+      }
     },
     {
-      "id": "2025020274",
-      "gameDate": "2025-11-13",
-      "startTimeEt": "7:30 PM ET",
-      "startTimeUtc": "2025-11-14T00:30:00+00:00",
+      "id": "2025020310",
+      "gameDate": "2025-11-18",
+      "startTimeEt": "8:00 PM ET",
+      "startTimeUtc": "2025-11-19T01:00:00+00:00",
       "homeTeam": {
+        "name": "Stars",
+        "abbrev": "DAL"
+      },
+      "awayTeam": {
+        "name": "Islanders",
+        "abbrev": "NYI"
+      },
+      "homeWinProb": 0.6923,
+      "awayWinProb": 0.3077,
+      "confidenceScore": 0.385,
+      "confidenceGrade": "A",
+      "edge": 0.192,
+      "summary": "Stars project at 69% as the home lean \u2014 an A-tier edge worth 19.2 pts over a coin flip. NYI PK drag -59.8 pts vs opponent special teams.",
+      "modelFavorite": "home",
+      "venue": "American Airlines Center",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 33.3,
+          "opponentPenaltyKillPct": 81.5,
+          "diff": -48.2
+        },
+        "away": {
+          "powerPlayPct": 15.6,
+          "opponentPenaltyKillPct": 75.4,
+          "diff": -59.800000000000004
+        }
+      }
+    },
+    {
+      "id": "2025020311",
+      "gameDate": "2025-11-18",
+      "startTimeEt": "8:00 PM ET",
+      "startTimeUtc": "2025-11-19T01:00:00+00:00",
+      "homeTeam": {
+        "name": "Jets",
+        "abbrev": "WPG"
+      },
+      "awayTeam": {
         "name": "Blue Jackets",
         "abbrev": "CBJ"
       },
-      "awayTeam": {
-        "name": "Oilers",
-        "abbrev": "EDM"
-      },
-      "homeWinProb": 0.3207,
-      "awayWinProb": 0.6793,
-      "confidenceScore": 0.359,
-      "confidenceGrade": "A",
-      "edge": -0.179,
-      "summary": "Oilers project at 68% as the road lean \u2014 an A-tier edge worth 17.9 pts over a coin flip.",
-      "modelFavorite": "away",
-      "venue": "Nationwide Arena",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020275",
-      "gameDate": "2025-11-13",
-      "startTimeEt": "9:00 PM ET",
-      "startTimeUtc": "2025-11-14T02:00:00+00:00",
-      "homeTeam": {
-        "name": "Avalanche",
-        "abbrev": "COL"
-      },
-      "awayTeam": {
-        "name": "Sabres",
-        "abbrev": "BUF"
-      },
-      "homeWinProb": 0.7208,
-      "awayWinProb": 0.2792,
-      "confidenceScore": 0.442,
-      "confidenceGrade": "A+",
-      "edge": 0.221,
-      "summary": "Avalanche project at 72% as the home lean \u2014 an A+-tier edge worth 22.1 pts over a coin flip.",
+      "homeWinProb": 0.5307,
+      "awayWinProb": 0.4693,
+      "confidenceScore": 0.061,
+      "confidenceGrade": "C+",
+      "edge": 0.031,
+      "summary": "Jets project at 53% as the home lean \u2014 a C+-tier edge worth 3.1 pts over a coin flip. CBJ PK drag -66.3 pts vs opponent special teams.",
       "modelFavorite": "home",
-      "venue": "Ball Arena",
-      "season": "20252026"
+      "venue": "Canada Life Centre",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 24.1,
+          "opponentPenaltyKillPct": 72.9,
+          "diff": -48.800000000000004
+        },
+        "away": {
+          "powerPlayPct": 17.8,
+          "opponentPenaltyKillPct": 84.1,
+          "diff": -66.3
+        }
+      }
     },
     {
-      "id": "2025020276",
-      "gameDate": "2025-11-13",
-      "startTimeEt": "9:00 PM ET",
-      "startTimeUtc": "2025-11-14T02:00:00+00:00",
+      "id": "2025020312",
+      "gameDate": "2025-11-18",
+      "startTimeEt": "8:30 PM ET",
+      "startTimeUtc": "2025-11-19T01:30:00+00:00",
       "homeTeam": {
+        "name": "Blackhawks",
+        "abbrev": "CHI"
+      },
+      "awayTeam": {
         "name": "Flames",
         "abbrev": "CGY"
       },
-      "awayTeam": {
-        "name": "Sharks",
-        "abbrev": "SJS"
-      },
-      "homeWinProb": 0.5561,
-      "awayWinProb": 0.4439,
-      "confidenceScore": 0.112,
-      "confidenceGrade": "B-",
-      "edge": 0.056,
-      "summary": "Flames project at 56% as the home lean \u2014 a B--tier edge worth 5.6 pts over a coin flip.",
+      "homeWinProb": 0.6522,
+      "awayWinProb": 0.3478,
+      "confidenceScore": 0.304,
+      "confidenceGrade": "A-",
+      "edge": 0.152,
+      "summary": "Blackhawks project at 65% as the home lean \u2014 an A--tier edge worth 15.2 pts over a coin flip. CGY PK drag -72.9 pts vs opponent special teams.",
       "modelFavorite": "home",
-      "venue": "Scotiabank Saddledome",
-      "season": "20252026"
+      "venue": "United Center",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 25.0,
+          "opponentPenaltyKillPct": 77.3,
+          "diff": -52.3
+        },
+        "away": {
+          "powerPlayPct": 11.9,
+          "opponentPenaltyKillPct": 84.8,
+          "diff": -72.89999999999999
+        }
+      }
     },
     {
-      "id": "2025020277",
-      "gameDate": "2025-11-13",
+      "id": "2025020313",
+      "gameDate": "2025-11-18",
       "startTimeEt": "10:00 PM ET",
-      "startTimeUtc": "2025-11-14T03:00:00+00:00",
+      "startTimeUtc": "2025-11-19T03:00:00+00:00",
       "homeTeam": {
         "name": "Golden Knights",
         "abbrev": "VGK"
       },
       "awayTeam": {
-        "name": "Islanders",
-        "abbrev": "NYI"
+        "name": "Rangers",
+        "abbrev": "NYR"
       },
-      "homeWinProb": 0.5928,
-      "awayWinProb": 0.4072,
-      "confidenceScore": 0.186,
-      "confidenceGrade": "B",
-      "edge": 0.093,
-      "summary": "Golden Knights project at 59% as the home lean \u2014 a B-tier edge worth 9.3 pts over a coin flip.",
-      "modelFavorite": "home",
-      "venue": "T-Mobile Arena",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020278",
-      "gameDate": "2025-11-13",
-      "startTimeEt": "10:00 PM ET",
-      "startTimeUtc": "2025-11-14T03:00:00+00:00",
-      "homeTeam": {
-        "name": "Kraken",
-        "abbrev": "SEA"
-      },
-      "awayTeam": {
-        "name": "Jets",
-        "abbrev": "WPG"
-      },
-      "homeWinProb": 0.3679,
-      "awayWinProb": 0.6321,
-      "confidenceScore": 0.264,
-      "confidenceGrade": "B+",
-      "edge": -0.132,
-      "summary": "Jets project at 63% as the road lean \u2014 a B+-tier edge worth 13.2 pts over a coin flip.",
-      "modelFavorite": "away",
-      "venue": "Climate Pledge Arena",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020281",
-      "gameDate": "2025-11-14",
-      "startTimeEt": "2:00 PM ET",
-      "startTimeUtc": "2025-11-14T19:00:00+00:00",
-      "homeTeam": {
-        "name": "Predators",
-        "abbrev": "NSH"
-      },
-      "awayTeam": {
-        "name": "Penguins",
-        "abbrev": "PIT"
-      },
-      "homeWinProb": 0.475,
-      "awayWinProb": 0.525,
-      "confidenceScore": 0.05,
+      "homeWinProb": 0.4773,
+      "awayWinProb": 0.5227,
+      "confidenceScore": 0.045,
       "confidenceGrade": "C+",
-      "edge": -0.025,
-      "summary": "Penguins project at 52% as the road lean \u2014 a C+-tier edge worth 2.5 pts over a coin flip.",
+      "edge": -0.023,
+      "summary": "Rangers project at 52% as the road lean \u2014 a C+-tier edge worth 2.3 pts over a coin flip. NYR PK drag -60.4 pts vs opponent special teams.",
       "modelFavorite": "away",
-      "venue": "Avicii Arena",
-      "season": "20252026"
+      "venue": "T-Mobile Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 23.1,
+          "opponentPenaltyKillPct": 80.4,
+          "diff": -57.300000000000004
+        },
+        "away": {
+          "powerPlayPct": 18.0,
+          "opponentPenaltyKillPct": 78.4,
+          "diff": -60.400000000000006
+        }
+      }
     },
     {
-      "id": "2025020279",
-      "gameDate": "2025-11-14",
-      "startTimeEt": "7:00 PM ET",
-      "startTimeUtc": "2025-11-15T00:00:00+00:00",
+      "id": "2025020314",
+      "gameDate": "2025-11-18",
+      "startTimeEt": "10:00 PM ET",
+      "startTimeUtc": "2025-11-19T03:00:00+00:00",
       "homeTeam": {
-        "name": "Hurricanes",
-        "abbrev": "CAR"
+        "name": "Sharks",
+        "abbrev": "SJS"
       },
       "awayTeam": {
-        "name": "Canucks",
-        "abbrev": "VAN"
-      },
-      "homeWinProb": 0.6083,
-      "awayWinProb": 0.3917,
-      "confidenceScore": 0.217,
-      "confidenceGrade": "B+",
-      "edge": 0.108,
-      "summary": "Hurricanes project at 61% as the home lean \u2014 a B+-tier edge worth 10.8 pts over a coin flip.",
-      "modelFavorite": "home",
-      "venue": "Lenovo Center",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020280",
-      "gameDate": "2025-11-14",
-      "startTimeEt": "8:00 PM ET",
-      "startTimeUtc": "2025-11-15T01:00:00+00:00",
-      "homeTeam": {
-        "name": "Blues",
-        "abbrev": "STL"
-      },
-      "awayTeam": {
-        "name": "Flyers",
-        "abbrev": "PHI"
-      },
-      "homeWinProb": 0.6106,
-      "awayWinProb": 0.3894,
-      "confidenceScore": 0.221,
-      "confidenceGrade": "B+",
-      "edge": 0.111,
-      "summary": "Blues project at 61% as the home lean \u2014 a B+-tier edge worth 11.1 pts over a coin flip.",
-      "modelFavorite": "home",
-      "venue": "Enterprise Center",
-      "season": "20252026"
-    },
-    {
-      "id": "2025020282",
-      "gameDate": "2025-11-14",
-      "startTimeEt": "9:00 PM ET",
-      "startTimeUtc": "2025-11-15T02:00:00+00:00",
-      "homeTeam": {
         "name": "Mammoth",
         "abbrev": "UTA"
       },
-      "awayTeam": {
-        "name": "Islanders",
-        "abbrev": "NYI"
-      },
-      "homeWinProb": 0.5412,
-      "awayWinProb": 0.4588,
-      "confidenceScore": 0.082,
-      "confidenceGrade": "B-",
-      "edge": 0.041,
-      "summary": "Mammoth project at 54% as the home lean \u2014 a B--tier edge worth 4.1 pts over a coin flip.",
-      "modelFavorite": "home",
-      "venue": "Delta Center",
-      "season": "20252026"
+      "homeWinProb": 0.2632,
+      "awayWinProb": 0.7368,
+      "confidenceScore": 0.474,
+      "confidenceGrade": "A+",
+      "edge": -0.237,
+      "summary": "Mammoth project at 74% as the road lean \u2014 an A+-tier edge worth 23.7 pts over a coin flip. SJS PK drag -63.2 pts vs opponent special teams.",
+      "modelFavorite": "away",
+      "venue": "SAP Center at San Jose",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 18.8,
+          "opponentPenaltyKillPct": 82.0,
+          "diff": -63.2
+        },
+        "away": {
+          "powerPlayPct": 15.5,
+          "opponentPenaltyKillPct": 77.4,
+          "diff": -61.900000000000006
+        }
+      }
     },
     {
-      "id": "2025020283",
-      "gameDate": "2025-11-15",
-      "startTimeEt": "5:00 PM ET",
-      "startTimeUtc": "2025-11-15T22:00:00+00:00",
+      "id": "2025020315",
+      "gameDate": "2025-11-19",
+      "startTimeEt": "7:00 PM ET",
+      "startTimeUtc": "2025-11-20T00:00:00+00:00",
       "homeTeam": {
-        "name": "Panthers",
-        "abbrev": "FLA"
+        "name": "Capitals",
+        "abbrev": "WSH"
       },
       "awayTeam": {
-        "name": "Lightning",
-        "abbrev": "TBL"
+        "name": "Oilers",
+        "abbrev": "EDM"
       },
-      "homeWinProb": 0.5259,
-      "awayWinProb": 0.4741,
-      "confidenceScore": 0.052,
+      "homeWinProb": 0.4773,
+      "awayWinProb": 0.5227,
+      "confidenceScore": 0.045,
       "confidenceGrade": "C+",
-      "edge": 0.026,
-      "summary": "Panthers project at 53% as the home lean \u2014 a C+-tier edge worth 2.6 pts over a coin flip.",
-      "modelFavorite": "home",
-      "venue": "Amerant Bank Arena",
-      "season": "20252026"
+      "edge": -0.023,
+      "summary": "Oilers project at 52% as the road lean \u2014 a C+-tier edge worth 2.3 pts over a coin flip. WSH PK drag -67.5 pts vs opponent special teams.",
+      "modelFavorite": "away",
+      "venue": "Capital One Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 14.0,
+          "opponentPenaltyKillPct": 81.5,
+          "diff": -67.5
+        },
+        "away": {
+          "powerPlayPct": 30.8,
+          "opponentPenaltyKillPct": 72.6,
+          "diff": -41.8
+        }
+      }
     },
     {
-      "id": "2025020284",
-      "gameDate": "2025-11-15",
-      "startTimeEt": "6:00 PM ET",
-      "startTimeUtc": "2025-11-15T23:00:00+00:00",
+      "id": "2025020316",
+      "gameDate": "2025-11-19",
+      "startTimeEt": "7:30 PM ET",
+      "startTimeUtc": "2025-11-20T00:30:00+00:00",
+      "homeTeam": {
+        "name": "Sabres",
+        "abbrev": "BUF"
+      },
+      "awayTeam": {
+        "name": "Flames",
+        "abbrev": "CGY"
+      },
+      "homeWinProb": 0.6316,
+      "awayWinProb": 0.3684,
+      "confidenceScore": 0.263,
+      "confidenceGrade": "B+",
+      "edge": 0.132,
+      "summary": "Sabres project at 63% as the home lean \u2014 a B+-tier edge worth 13.2 pts over a coin flip. CGY PK drag -77.8 pts vs opponent special teams.",
+      "modelFavorite": "home",
+      "venue": "KeyBank Center",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 17.2,
+          "opponentPenaltyKillPct": 77.3,
+          "diff": -60.099999999999994
+        },
+        "away": {
+          "powerPlayPct": 11.9,
+          "opponentPenaltyKillPct": 89.7,
+          "diff": -77.8
+        }
+      }
+    },
+    {
+      "id": "2025020317",
+      "gameDate": "2025-11-19",
+      "startTimeEt": "9:30 PM ET",
+      "startTimeUtc": "2025-11-20T02:30:00+00:00",
       "homeTeam": {
         "name": "Wild",
         "abbrev": "MIN"
       },
       "awayTeam": {
+        "name": "Hurricanes",
+        "abbrev": "CAR"
+      },
+      "homeWinProb": 0.339,
+      "awayWinProb": 0.661,
+      "confidenceScore": 0.322,
+      "confidenceGrade": "A-",
+      "edge": -0.161,
+      "summary": "Hurricanes project at 66% as the road lean \u2014 an A--tier edge worth 16.1 pts over a coin flip. CAR PK drag -58.7 pts vs opponent special teams.",
+      "modelFavorite": "away",
+      "venue": "Grand Casino Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 26.0,
+          "opponentPenaltyKillPct": 79.0,
+          "diff": -53.0
+        },
+        "away": {
+          "powerPlayPct": 13.0,
+          "opponentPenaltyKillPct": 71.7,
+          "diff": -58.7
+        }
+      }
+    },
+    {
+      "id": "2025020318",
+      "gameDate": "2025-11-19",
+      "startTimeEt": "10:00 PM ET",
+      "startTimeUtc": "2025-11-20T03:00:00+00:00",
+      "homeTeam": {
         "name": "Ducks",
         "abbrev": "ANA"
       },
-      "homeWinProb": 0.7269,
-      "awayWinProb": 0.2731,
-      "confidenceScore": 0.454,
-      "confidenceGrade": "A+",
-      "edge": 0.227,
-      "summary": "Wild project at 73% as the home lean \u2014 an A+-tier edge worth 22.7 pts over a coin flip.",
+      "awayTeam": {
+        "name": "Bruins",
+        "abbrev": "BOS"
+      },
+      "homeWinProb": 0.339,
+      "awayWinProb": 0.661,
+      "confidenceScore": 0.322,
+      "confidenceGrade": "A-",
+      "edge": -0.161,
+      "summary": "Bruins project at 66% as the road lean \u2014 an A--tier edge worth 16.1 pts over a coin flip. ANA PK drag -61.6 pts vs opponent special teams.",
+      "modelFavorite": "away",
+      "venue": "Honda Center",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 20.9,
+          "opponentPenaltyKillPct": 82.5,
+          "diff": -61.6
+        },
+        "away": {
+          "powerPlayPct": 25.4,
+          "opponentPenaltyKillPct": 77.6,
+          "diff": -52.199999999999996
+        }
+      }
+    },
+    {
+      "id": "2025020319",
+      "gameDate": "2025-11-20",
+      "startTimeEt": "7:00 PM ET",
+      "startTimeUtc": "2025-11-21T00:00:00+00:00",
+      "homeTeam": {
+        "name": "Maple Leafs",
+        "abbrev": "TOR"
+      },
+      "awayTeam": {
+        "name": "Blue Jackets",
+        "abbrev": "CBJ"
+      },
+      "homeWinProb": 0.4773,
+      "awayWinProb": 0.5227,
+      "confidenceScore": 0.045,
+      "confidenceGrade": "C+",
+      "edge": -0.023,
+      "summary": "Blue Jackets project at 52% as the road lean \u2014 a C+-tier edge worth 2.3 pts over a coin flip. CBJ PK drag -61.1 pts vs opponent special teams.",
+      "modelFavorite": "away",
+      "venue": "Scotiabank Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 16.0,
+          "opponentPenaltyKillPct": 72.9,
+          "diff": -56.900000000000006
+        },
+        "away": {
+          "powerPlayPct": 17.8,
+          "opponentPenaltyKillPct": 78.9,
+          "diff": -61.10000000000001
+        }
+      }
+    },
+    {
+      "id": "2025020320",
+      "gameDate": "2025-11-20",
+      "startTimeEt": "7:00 PM ET",
+      "startTimeUtc": "2025-11-21T00:00:00+00:00",
+      "homeTeam": {
+        "name": "Canadiens",
+        "abbrev": "MTL"
+      },
+      "awayTeam": {
+        "name": "Capitals",
+        "abbrev": "WSH"
+      },
+      "homeWinProb": 0.6316,
+      "awayWinProb": 0.3684,
+      "confidenceScore": 0.263,
+      "confidenceGrade": "B+",
+      "edge": 0.132,
+      "summary": "Canadiens project at 63% as the home lean \u2014 a B+-tier edge worth 13.2 pts over a coin flip. WSH PK drag -64.5 pts vs opponent special teams.",
       "modelFavorite": "home",
-      "venue": "Grand Casino Arena",
-      "season": "20252026"
+      "venue": "Centre Bell",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 21.4,
+          "opponentPenaltyKillPct": 72.6,
+          "diff": -51.199999999999996
+        },
+        "away": {
+          "powerPlayPct": 14.0,
+          "opponentPenaltyKillPct": 78.5,
+          "diff": -64.5
+        }
+      }
+    },
+    {
+      "id": "2025020321",
+      "gameDate": "2025-11-20",
+      "startTimeEt": "7:00 PM ET",
+      "startTimeUtc": "2025-11-21T00:00:00+00:00",
+      "homeTeam": {
+        "name": "Red Wings",
+        "abbrev": "DET"
+      },
+      "awayTeam": {
+        "name": "Islanders",
+        "abbrev": "NYI"
+      },
+      "homeWinProb": 0.8235,
+      "awayWinProb": 0.1765,
+      "confidenceScore": 0.647,
+      "confidenceGrade": "A+",
+      "edge": 0.324,
+      "summary": "Red Wings project at 82% as the home lean \u2014 an A+-tier edge worth 32.4 pts over a coin flip. NYI PK drag -65.9 pts vs opponent special teams.",
+      "modelFavorite": "home",
+      "venue": "Little Caesars Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 20.9,
+          "opponentPenaltyKillPct": 81.5,
+          "diff": -60.6
+        },
+        "away": {
+          "powerPlayPct": 15.6,
+          "opponentPenaltyKillPct": 81.5,
+          "diff": -65.9
+        }
+      }
+    },
+    {
+      "id": "2025020323",
+      "gameDate": "2025-11-20",
+      "startTimeEt": "7:00 PM ET",
+      "startTimeUtc": "2025-11-21T00:00:00+00:00",
+      "homeTeam": {
+        "name": "Panthers",
+        "abbrev": "FLA"
+      },
+      "awayTeam": {
+        "name": "Devils",
+        "abbrev": "NJD"
+      },
+      "homeWinProb": 0.4773,
+      "awayWinProb": 0.5227,
+      "confidenceScore": 0.045,
+      "confidenceGrade": "C+",
+      "edge": -0.023,
+      "summary": "Devils project at 52% as the road lean \u2014 a C+-tier edge worth 2.3 pts over a coin flip. FLA PK drag -63.8 pts vs opponent special teams.",
+      "modelFavorite": "away",
+      "venue": "Amerant Bank Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 21.1,
+          "opponentPenaltyKillPct": 84.9,
+          "diff": -63.800000000000004
+        },
+        "away": {
+          "powerPlayPct": 25.5,
+          "opponentPenaltyKillPct": 78.3,
+          "diff": -52.8
+        }
+      }
+    },
+    {
+      "id": "2025020324",
+      "gameDate": "2025-11-20",
+      "startTimeEt": "7:00 PM ET",
+      "startTimeUtc": "2025-11-21T00:00:00+00:00",
+      "homeTeam": {
+        "name": "Flyers",
+        "abbrev": "PHI"
+      },
+      "awayTeam": {
+        "name": "Blues",
+        "abbrev": "STL"
+      },
+      "homeWinProb": 0.6316,
+      "awayWinProb": 0.3684,
+      "confidenceScore": 0.263,
+      "confidenceGrade": "B+",
+      "edge": 0.132,
+      "summary": "Flyers project at 63% as the home lean \u2014 a B+-tier edge worth 13.2 pts over a coin flip. STL PK drag -64.6 pts vs opponent special teams.",
+      "modelFavorite": "home",
+      "venue": "Xfinity Mobile Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 19.6,
+          "opponentPenaltyKillPct": 70.8,
+          "diff": -51.199999999999996
+        },
+        "away": {
+          "powerPlayPct": 22.9,
+          "opponentPenaltyKillPct": 87.5,
+          "diff": -64.6
+        }
+      }
+    },
+    {
+      "id": "2025020322",
+      "gameDate": "2025-11-20",
+      "startTimeEt": "7:30 PM ET",
+      "startTimeUtc": "2025-11-21T00:30:00+00:00",
+      "homeTeam": {
+        "name": "Lightning",
+        "abbrev": "TBL"
+      },
+      "awayTeam": {
+        "name": "Oilers",
+        "abbrev": "EDM"
+      },
+      "homeWinProb": 0.4773,
+      "awayWinProb": 0.5227,
+      "confidenceScore": 0.045,
+      "confidenceGrade": "C+",
+      "edge": -0.023,
+      "summary": "Oilers project at 52% as the road lean \u2014 a C+-tier edge worth 2.3 pts over a coin flip. TBL PK drag -66.2 pts vs opponent special teams.",
+      "modelFavorite": "away",
+      "venue": "Benchmark International Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 15.3,
+          "opponentPenaltyKillPct": 81.5,
+          "diff": -66.2
+        },
+        "away": {
+          "powerPlayPct": 30.8,
+          "opponentPenaltyKillPct": 84.7,
+          "diff": -53.900000000000006
+        }
+      }
+    },
+    {
+      "id": "2025020325",
+      "gameDate": "2025-11-20",
+      "startTimeEt": "8:00 PM ET",
+      "startTimeUtc": "2025-11-21T01:00:00+00:00",
+      "homeTeam": {
+        "name": "Blackhawks",
+        "abbrev": "CHI"
+      },
+      "awayTeam": {
+        "name": "Kraken",
+        "abbrev": "SEA"
+      },
+      "homeWinProb": 0.6522,
+      "awayWinProb": 0.3478,
+      "confidenceScore": 0.304,
+      "confidenceGrade": "A-",
+      "edge": 0.152,
+      "summary": "Blackhawks project at 65% as the home lean \u2014 an A--tier edge worth 15.2 pts over a coin flip. SEA PK drag -65.9 pts vs opponent special teams.",
+      "modelFavorite": "home",
+      "venue": "United Center",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 25.0,
+          "opponentPenaltyKillPct": 71.2,
+          "diff": -46.2
+        },
+        "away": {
+          "powerPlayPct": 18.9,
+          "opponentPenaltyKillPct": 84.8,
+          "diff": -65.9
+        }
+      }
+    },
+    {
+      "id": "2025020326",
+      "gameDate": "2025-11-20",
+      "startTimeEt": "9:00 PM ET",
+      "startTimeUtc": "2025-11-21T02:00:00+00:00",
+      "homeTeam": {
+        "name": "Avalanche",
+        "abbrev": "COL"
+      },
+      "awayTeam": {
+        "name": "Rangers",
+        "abbrev": "NYR"
+      },
+      "homeWinProb": 0.6522,
+      "awayWinProb": 0.3478,
+      "confidenceScore": 0.304,
+      "confidenceGrade": "A-",
+      "edge": 0.152,
+      "summary": "Avalanche project at 65% as the home lean \u2014 an A--tier edge worth 15.2 pts over a coin flip. NYR PK drag -70.7 pts vs opponent special teams.",
+      "modelFavorite": "home",
+      "venue": "Ball Arena",
+      "season": "20252026",
+      "specialTeams": {
+        "home": {
+          "powerPlayPct": 16.7,
+          "opponentPenaltyKillPct": 80.4,
+          "diff": -63.7
+        },
+        "away": {
+          "powerPlayPct": 18.0,
+          "opponentPenaltyKillPct": 88.7,
+          "diff": -70.7
+        }
+      }
     }
-  ]
+  ],
+  "playerHubMeta": {
+    "season": "20252026",
+    "slateDate": "2025-11-18",
+    "lineCombosGeneratedAt": "2025-11-18T19:37:07.416140+00:00",
+    "lineCombosSlateDate": "2025-11-17"
+  }
 }

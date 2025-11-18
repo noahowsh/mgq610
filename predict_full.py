@@ -23,7 +23,7 @@ import sys
 import json
 import warnings
 from pathlib import Path
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from zoneinfo import ZoneInfo
 import pandas as pd
 import numpy as np
@@ -31,9 +31,10 @@ import numpy as np
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent / 'src'))
 
-from nhl_prediction.nhl_api import fetch_future_games, fetch_todays_games
+from nhl_prediction.nhl_api import fetch_future_games, fetch_todays_games, fetch_schedule
 from nhl_prediction.pipeline import build_dataset
-from nhl_prediction.model import create_baseline_model, fit_model
+from nhl_prediction.model import calibrate_threshold, create_baseline_model, fit_model, tune_logreg_c
+from nhl_prediction.player_hub.context import refresh_player_hub_context
 
 # Suppress sklearn warnings
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -41,6 +42,21 @@ warnings.filterwarnings('ignore', category=UserWarning)
 WEB_PREDICTIONS_PATH = Path(__file__).parent / "web" / "src" / "data" / "todaysPredictions.json"
 ET_ZONE = ZoneInfo("America/New_York")
 
+def recent_seasons(anchor: datetime | date | None = None, count: int = 3) -> list[str]:
+    """Return the most recent NHL season IDs ending at the anchor date."""
+    if anchor is None:
+        anchor_date = datetime.utcnow().date()
+    elif isinstance(anchor, datetime):
+        anchor_date = anchor.date()
+    else:
+        anchor_date = anchor
+
+    start_year = anchor_date.year if anchor_date.month >= 7 else anchor_date.year - 1
+    seasons = []
+    for offset in range(count):
+        year = start_year - offset
+        seasons.append(f"{year}{year + 1}")
+    return seasons
 
 def format_start_times(start_time_utc: str):
     """Return ISO + human-readable ET string for a UTC start time."""
@@ -77,6 +93,14 @@ def grade_from_edge(edge_value: float) -> str:
     return "C"
 
 
+def apply_calibration(prob: float, calibrator) -> float:
+    """Return calibrated probability using the isotonic model if available."""
+    if calibrator is None:
+        return float(np.clip(prob, 0.0, 1.0))
+    calibrated = calibrator.predict(np.asarray([prob]))[0]
+    return float(np.clip(calibrated, 0.0, 1.0))
+
+
 def build_summary(home_team: str, away_team: str, prob_home: float, confidence_grade: str) -> str:
     favorite = home_team if prob_home >= 0.5 else away_team
     favorite_prob = prob_home if favorite == home_team else 1 - prob_home
@@ -89,43 +113,151 @@ def build_summary(home_team: str, away_team: str, prob_home: float, confidence_g
     )
 
 
-def export_predictions_json(predictions, generated_at=None):
+# Special teams enrichment helpers -----------------------------------------
+
+def _build_special_team_lookup(player_hub_payload):
+    if not isinstance(player_hub_payload, dict):
+        return {}
+    special = player_hub_payload.get("specialTeams")
+    if not isinstance(special, dict):
+        return {}
+    teams = special.get("teams")
+    if not isinstance(teams, dict):
+        return {}
+    lookup = {}
+    for key, value in teams.items():
+        if isinstance(key, str):
+            lookup[key.upper()] = value or {}
+    return lookup
+
+
+def _safe_percent(value):
+    try:
+        if value is None:
+            return None
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number
+
+
+def _build_special_split(team_stats, opponent_stats):
+    if not isinstance(team_stats, dict) or not isinstance(opponent_stats, dict):
+        return None
+    pp = _safe_percent(team_stats.get("powerPlayPct"))
+    pk = _safe_percent(opponent_stats.get("penaltyKillPct"))
+    if pp is None and pk is None:
+        return None
+    diff = pp - pk if pp is not None and pk is not None else None
+    return {
+        "powerPlayPct": pp,
+        "opponentPenaltyKillPct": pk,
+        "diff": diff,
+    }
+
+
+def _attach_special_teams(game, lookup):
+    if not lookup:
+        return None
+    home = lookup.get(str(game.get("home_team", "")).upper())
+    away = lookup.get(str(game.get("away_team", "")).upper())
+    if not home or not away:
+        return None
+    home_split = _build_special_split(home, away)
+    away_split = _build_special_split(away, home)
+    if not home_split and not away_split:
+        return None
+    return {
+        "home": home_split,
+        "away": away_split,
+    }
+
+
+def _append_special_summary(summary: str, special: dict | None, home: dict, away: dict) -> str:
+    if not special:
+        return summary
+    best_team = None
+    best_diff = None
+    for team_entry, split in ((home, special.get("home")), (away, special.get("away"))):
+        diff = (split or {}).get("diff")
+        if diff is None:
+            continue
+        if best_diff is None or abs(diff) > abs(best_diff):
+            best_diff = diff
+            best_team = team_entry
+    if best_team is None or best_diff is None or abs(best_diff) < 3:
+        return summary
+    tendency = "PP edge" if best_diff > 0 else "PK drag"
+    abbrev = best_team.get("abbrev") or best_team.get("name") or "Team"
+    return f"{summary} {abbrev} {tendency} {best_diff:+.1f} pts vs opponent special teams."
+
+
+def _player_hub_meta(player_hub_payload):
+    if not isinstance(player_hub_payload, dict):
+        return None
+    combos = player_hub_payload.get("lineCombos") or {}
+    meta = {
+        "season": player_hub_payload.get("season"),
+        "slateDate": player_hub_payload.get("slateDate"),
+        "lineCombosGeneratedAt": combos.get("generatedAt"),
+        "lineCombosSlateDate": combos.get("slateDate"),
+    }
+    if any(meta.values()):
+        return meta
+    return None
+
+
+def export_predictions_json(predictions, generated_at=None, player_hub_payload=None):
     """Write predictions for the web landing page in JSON format."""
     WEB_PREDICTIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "generatedAt": (generated_at or datetime.now(timezone.utc).isoformat()),
         "games": [],
     }
+    special_team_lookup = _build_special_team_lookup(player_hub_payload)
+    hub_meta = _player_hub_meta(player_hub_payload)
+    if hub_meta:
+        payload["playerHubMeta"] = hub_meta
 
     for pred in predictions:
-        payload["games"].append(
-            {
-                "id": str(pred.get("game_id", pred.get("game_num"))),
-                "gameDate": pred.get("date"),
-                "startTimeEt": pred.get("start_time_et"),
-                "startTimeUtc": pred.get("start_time_utc"),
-                "homeTeam": {
-                    "name": pred.get("home_team_name", pred.get("home_team")),
-                    "abbrev": pred.get("home_team"),
-                },
-                "awayTeam": {
-                    "name": pred.get("away_team_name", pred.get("away_team")),
-                    "abbrev": pred.get("away_team"),
-                },
-                "homeWinProb": round(pred.get("home_win_prob", 0.0), 4),
-                "awayWinProb": round(pred.get("away_win_prob", 0.0), 4),
-                "confidenceScore": round(pred.get("confidence", 0.0), 3),
-                "confidenceGrade": pred.get("confidence_grade", "C"),
-                "edge": round(pred.get("edge", 0.0), 3),
-                "summary": pred.get("summary", ""),
-                "modelFavorite": pred.get("model_favorite", "home"),
-                "venue": pred.get("venue"),
-                "season": str(pred.get("season")) if pred.get("season") else None,
-            }
-        )
+        game_entry = {
+            "id": str(pred.get("game_id", pred.get("game_num"))),
+            "gameDate": pred.get("date"),
+            "startTimeEt": pred.get("start_time_et"),
+            "startTimeUtc": pred.get("start_time_utc"),
+            "homeTeam": {
+                "name": pred.get("home_team_name", pred.get("home_team")),
+                "abbrev": pred.get("home_team"),
+            },
+            "awayTeam": {
+                "name": pred.get("away_team_name", pred.get("away_team")),
+                "abbrev": pred.get("away_team"),
+            },
+            "homeWinProb": round(pred.get("home_win_prob", 0.0), 4),
+            "awayWinProb": round(pred.get("away_win_prob", 0.0), 4),
+            "confidenceScore": round(pred.get("confidence", 0.0), 3),
+            "confidenceGrade": pred.get("confidence_grade", "C"),
+            "edge": round(pred.get("edge", 0.0), 3),
+            "summary": pred.get("summary", ""),
+            "modelFavorite": pred.get("model_favorite", "home"),
+            "venue": pred.get("venue"),
+            "season": str(pred.get("season")) if pred.get("season") else None,
+        }
+        special = _attach_special_teams(pred, special_team_lookup)
+        if special:
+            game_entry["specialTeams"] = special
+            game_entry["summary"] = _append_special_summary(game_entry["summary"], special, game_entry["homeTeam"], game_entry["awayTeam"])
+        payload["games"].append(game_entry)
 
     WEB_PREDICTIONS_PATH.write_text(json.dumps(payload, indent=2))
     print(f"\n🛰  Exported web payload → {WEB_PREDICTIONS_PATH}")
+
+
+def derive_season_id_from_date(target: datetime) -> str:
+    """Return NHL season identifier (e.g., 20242025) for the provided datetime."""
+    start_year = target.year if target.month >= 7 else target.year - 1
+    end_year = start_year + 1
+    return f"{start_year}{end_year}"
 
 
 def predict_games(date=None, num_games=20):
@@ -144,11 +276,11 @@ def predict_games(date=None, num_games=20):
     
     # Get date
     if date is None:
-        date_str = datetime.now().strftime('%Y-%m-%d')
-        date_display = datetime.now().strftime('%A, %B %d, %Y')
+        target_dt = datetime.now()
     else:
-        date_str = date
-        date_display = datetime.strptime(date, '%Y-%m-%d').strftime('%A, %B %d, %Y')
+        target_dt = datetime.strptime(date, '%Y-%m-%d')
+    date_str = target_dt.strftime('%Y-%m-%d')
+    date_display = target_dt.strftime('%A, %B %d, %Y')
     
     print(f"\n📅 Date: {date_display}")
     
@@ -159,6 +291,9 @@ def predict_games(date=None, num_games=20):
         games = fetch_todays_games()
     else:
         games = fetch_future_games(date_str)
+        if not games and target_dt.date() < datetime.now().date():
+            print("   ⚠️  No future games detected — falling back to historical schedule for backfill.")
+            games = fetch_schedule(date_str)
     
     if not games:
         print(f"   ℹ️  No games scheduled for {date_str}")
@@ -167,29 +302,47 @@ def predict_games(date=None, num_games=20):
     print(f"   ✅ Found {len(games)} games")
     
     # Step 2: Build dataset
-    print("\n2️⃣  Building dataset with ALL features...")
-    print("   (Loading 4 full seasons: 2021-2025, ~5,600+ games...)")
-    print("   ⚠️  Skipping 2020 COVID-shortened season")
-    
-    # Load 2021-2025 (skip 2020 COVID season)
-    dataset = build_dataset(['20212022', '20222023', '20232024', '20242025'])
+    seasons = recent_seasons(target_dt, count=3)
+    print("\n2️⃣  Building dataset with native artifacts...")
+    print(f"   (Loading {len(seasons)} season(s): {', '.join(seasons)})")
+
+    dataset = build_dataset(seasons)
     
     print(f"   ✅ {len(dataset.games)} games loaded")
     print(f"   ✅ {dataset.features.shape[1]} features engineered")
     
-    # Step 3: Train model
-    print("\n3️⃣  Training model on 2021-2024 seasons (4 full seasons)...")
+    # Step 3: Train calibrated model using only past games
+    print("\n3️⃣  Training calibrated logistic regression model...")
+    predict_date = target_dt
+    cutoff = pd.Timestamp(predict_date.date())
+    game_dates = pd.to_datetime(dataset.games["gameDate"])
+    eligible_mask = game_dates < cutoff
     
-    # Train on 2021-2024, test on 2025 (current season)
-    train_mask = dataset.games['seasonId'].isin(['20212022', '20222023', '20232024', '20242025'])
-    # Only train on games before prediction date
-    predict_date = datetime.strptime(date_str, '%Y-%m-%d') if date else datetime.now()
-    train_mask = train_mask & (dataset.games['gameDate'] < predict_date)
+    if not eligible_mask.any():
+        print("   ❌ No historical games available before this date.")
+        return []
     
-    model = create_baseline_model(C=1.0)
-    model = fit_model(model, dataset.features, dataset.target, train_mask)
+    eligible_games = dataset.games.loc[eligible_mask].copy()
+    eligible_features = dataset.features.loc[eligible_mask].copy()
+    eligible_target = dataset.target.loc[eligible_mask].copy()
+    train_seasons = sorted(eligible_games["seasonId"].unique().tolist())
     
-    print(f"   ✅ Trained on {train_mask.sum():,} historical games (2021-2024)")
+    candidate_cs = [0.005, 0.01, 0.02, 0.03, 0.05, 0.1, 0.3, 0.5, 1.0]
+    best_c = tune_logreg_c(candidate_cs, eligible_features, eligible_target, eligible_games, train_seasons)
+    threshold, val_acc, calibrator = calibrate_threshold(best_c, eligible_features, eligible_target, eligible_games, train_seasons)
+    
+    training_mask = pd.Series(True, index=eligible_features.index)
+    model = create_baseline_model(C=best_c)
+    model = fit_model(model, eligible_features, eligible_target, training_mask)
+    
+    print(f"   ✅ Trained on {training_mask.sum():,} historical games | seasons: {', '.join(map(str, train_seasons))}")
+    print(f"   ✅ Selected logistic regression C={best_c:.3f}")
+    if val_acc is not None:
+        print(f"   ✅ Validation threshold {threshold:.3f} (accuracy {val_acc:.3f})")
+    else:
+        print("   ℹ️  Not enough seasons for validation; using default 0.500 threshold")
+    if calibrator is not None:
+        print("   ✅ Applied isotonic probability calibration")
     
     # Step 4: Predict
     print(f"\n4️⃣  Generating predictions for {min(num_games, len(games))} games...")
@@ -199,22 +352,25 @@ def predict_games(date=None, num_games=20):
     print("="*80)
     
     predictions = []
+    eligible_games["seasonId_str"] = eligible_games["seasonId"].astype(str)
+    feature_columns = eligible_features.columns
     
     for i, game in enumerate(games[:num_games], 1):
         home_id = game['homeTeamId']
         away_id = game['awayTeamId']
         home_abbrev = game['homeTeamAbbrev']
         away_abbrev = game['awayTeamAbbrev']
+        season_id = str(game.get("season") or train_seasons[-1])
         
         # Find most recent games for each team
-        home_recent = dataset.games[
-            (dataset.games['teamId_home'] == home_id) & 
-            (dataset.games['seasonId'] == '20242025')
+        home_recent = eligible_games[
+            (eligible_games['teamId_home'] == home_id) & 
+            (eligible_games['seasonId_str'] == season_id)
         ].tail(1)
         
-        away_recent = dataset.games[
-            (dataset.games['teamId_away'] == away_id) & 
-            (dataset.games['seasonId'] == '20242025')
+        away_recent = eligible_games[
+            (eligible_games['teamId_away'] == away_id) & 
+            (eligible_games['seasonId_str'] == season_id)
         ].tail(1)
         
         if len(home_recent) == 0 or len(away_recent) == 0:
@@ -231,9 +387,11 @@ def predict_games(date=None, num_games=20):
         
         # Create matchup features (average of recent performance)
         matchup_features = (home_features + away_features) / 2
+        matchup_features = matchup_features.reindex(feature_columns, fill_value=0.0)
         
-        # Predict with full model
-        prob_home = model.predict_proba(matchup_features.values.reshape(1, -1))[0][1]
+        # Predict with calibrated model
+        prob_home_raw = model.predict_proba(matchup_features.values.reshape(1, -1))[0][1]
+        prob_home = apply_calibration(prob_home_raw, calibrator)
         prob_away = 1 - prob_home
 
         start_time_utc_iso, start_time_et = format_start_times(game.get('startTimeUTC', ''))
@@ -288,8 +446,12 @@ def predict_games(date=None, num_games=20):
     print("\n" + "="*80)
     print(f"✅ PREDICTIONS COMPLETE")
     print(f"   Total Games: {len(predictions)}")
-    print(f"   Model: Logistic Regression with {dataset.features.shape[1]} features")
-    print(f"   Training: {train_mask.sum()} games from 2022-2024 seasons")
+    print(f"   Model: Logistic Regression (C={best_c:.3f}) with {eligible_features.shape[1]} features")
+    print(f"   Training: {training_mask.sum():,} games from seasons {', '.join(map(str, train_seasons))}")
+    if calibrator is not None:
+        print("   Calibration: Isotonic regression on validation season")
+    else:
+        print("   Calibration: Not available (insufficient validation split)")
     print("="*80)
     
     return predictions
@@ -323,8 +485,20 @@ def main():
             df.to_csv(filename, index=False)
             print(f"\n💾 Saved predictions to: {filename}")
 
-        export_predictions_json(predictions, generated_at=datetime.now(timezone.utc).isoformat())
-    
+        target_dt = datetime.strptime(date, "%Y-%m-%d") if date else datetime.now()
+        player_hub_payload = None
+        try:
+            season_id = derive_season_id_from_date(target_dt)
+            player_hub_payload = refresh_player_hub_context(target_dt.date(), season_id)
+            print("🗂  Updated Player Hub context payload.")
+        except Exception as refresh_error:
+            print(f"⚠️  Failed to refresh Player Hub context: {refresh_error}")
+        export_predictions_json(
+            predictions,
+            generated_at=datetime.now(timezone.utc).isoformat(),
+            player_hub_payload=player_hub_payload,
+        )
+
     except KeyboardInterrupt:
         print("\n\n⚠️  Interrupted by user")
     except Exception as e:
