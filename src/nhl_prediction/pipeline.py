@@ -58,6 +58,8 @@ def build_dataset(seasons: Iterable[str]) -> Dataset:
         "goalie_save_pct_game",
         "goalie_xg_saved",
         "goalie_shots_faced",
+        "goalie_confirmed_start",
+        "goalie_injury_flag",
         "goalie_start_likelihood",
         "goalie_rest_days",
         "goalie_rolling_gsa",

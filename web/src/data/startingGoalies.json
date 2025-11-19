@@ -1,0 +1,329 @@
+{
+  "generatedAt": "2025-11-19T03:37:56.223796Z",
+  "date": "2025-11-19",
+  "teams": {},
+  "games": [
+    {
+      "gameId": "2025020315",
+      "homeTeam": "WSH",
+      "awayTeam": "EDM",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020316",
+      "homeTeam": "BUF",
+      "awayTeam": "CGY",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020317",
+      "homeTeam": "MIN",
+      "awayTeam": "CAR",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020318",
+      "homeTeam": "ANA",
+      "awayTeam": "BOS",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020319",
+      "homeTeam": "TOR",
+      "awayTeam": "CBJ",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020320",
+      "homeTeam": "MTL",
+      "awayTeam": "WSH",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020321",
+      "homeTeam": "DET",
+      "awayTeam": "NYI",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020323",
+      "homeTeam": "FLA",
+      "awayTeam": "NJD",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020324",
+      "homeTeam": "PHI",
+      "awayTeam": "STL",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020322",
+      "homeTeam": "TBL",
+      "awayTeam": "EDM",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020325",
+      "homeTeam": "CHI",
+      "awayTeam": "SEA",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020326",
+      "homeTeam": "COL",
+      "awayTeam": "NYR",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020327",
+      "homeTeam": "UTA",
+      "awayTeam": "VGK",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020328",
+      "homeTeam": "VAN",
+      "awayTeam": "DAL",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020329",
+      "homeTeam": "ANA",
+      "awayTeam": "OTT",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020330",
+      "homeTeam": "SJS",
+      "awayTeam": "LAK",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020331",
+      "homeTeam": "BUF",
+      "awayTeam": "CHI",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020332",
+      "homeTeam": "PIT",
+      "awayTeam": "MIN",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020333",
+      "homeTeam": "WPG",
+      "awayTeam": "CAR",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020334",
+      "homeTeam": "LAK",
+      "awayTeam": "BOS",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020335",
+      "homeTeam": "DET",
+      "awayTeam": "CBJ",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020336",
+      "homeTeam": "NYI",
+      "awayTeam": "STL",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020337",
+      "homeTeam": "MTL",
+      "awayTeam": "TOR",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020338",
+      "homeTeam": "FLA",
+      "awayTeam": "EDM",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020339",
+      "homeTeam": "PHI",
+      "awayTeam": "NJD",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020340",
+      "homeTeam": "PIT",
+      "awayTeam": "SEA",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020341",
+      "homeTeam": "WSH",
+      "awayTeam": "TBL",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020342",
+      "homeTeam": "SJS",
+      "awayTeam": "OTT",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020343",
+      "homeTeam": "NSH",
+      "awayTeam": "COL",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020344",
+      "homeTeam": "UTA",
+      "awayTeam": "NYR",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020345",
+      "homeTeam": "CGY",
+      "awayTeam": "DAL",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020346",
+      "homeTeam": "ANA",
+      "awayTeam": "VGK",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020347",
+      "homeTeam": "BUF",
+      "awayTeam": "CAR",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020348",
+      "homeTeam": "WPG",
+      "awayTeam": "MIN",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020349",
+      "homeTeam": "NYI",
+      "awayTeam": "SEA",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020350",
+      "homeTeam": "CHI",
+      "awayTeam": "COL",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020351",
+      "homeTeam": "SJS",
+      "awayTeam": "BOS",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020352",
+      "homeTeam": "VAN",
+      "awayTeam": "CGY",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020353",
+      "homeTeam": "TBL",
+      "awayTeam": "PHI",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020354",
+      "homeTeam": "NJD",
+      "awayTeam": "DET",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020355",
+      "homeTeam": "NYR",
+      "awayTeam": "STL",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020356",
+      "homeTeam": "WSH",
+      "awayTeam": "CBJ",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020357",
+      "homeTeam": "NSH",
+      "awayTeam": "FLA",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020358",
+      "homeTeam": "UTA",
+      "awayTeam": "VGK",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020359",
+      "homeTeam": "LAK",
+      "awayTeam": "OTT",
+      "homeGoalie": null,
+      "awayGoalie": null
+    },
+    {
+      "gameId": "2025020360",
+      "homeTeam": "EDM",
+      "awayTeam": "DAL",
+      "homeGoalie": null,
+      "awayGoalie": null
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-11-19T03:18:37.311274+00:00",
+  "generatedAt": "2025-11-19T03:38:05.219906+00:00",
   "seasonId": "20252026",
   "teams": [
     {
@@ -403,6 +403,22 @@
       "seasonId": 20252026
     },
     {
+      "team": "Toronto Maple Leafs",
+      "abbrev": "TOR",
+      "wins": 9,
+      "losses": 9,
+      "ot": 2,
+      "points": 20,
+      "gamesPlayed": 20,
+      "pointPctg": 0.5,
+      "goalDifferential": -4,
+      "goalsForPerGame": 3.5,
+      "goalsAgainstPerGame": 3.7,
+      "shotsForPerGame": 27.8,
+      "shotsAgainstPerGame": 31.1,
+      "seasonId": 20252026
+    },
+    {
       "team": "Vancouver Canucks",
       "abbrev": "VAN",
       "wins": 9,
@@ -435,22 +451,6 @@
       "seasonId": 20252026
     },
     {
-      "team": "Toronto Maple Leafs",
-      "abbrev": "TOR",
-      "wins": 8,
-      "losses": 9,
-      "ot": 2,
-      "points": 18,
-      "gamesPlayed": 19,
-      "pointPctg": 0.47368,
-      "goalDifferential": -5,
-      "goalsForPerGame": 3.52631,
-      "goalsAgainstPerGame": 3.78947,
-      "shotsForPerGame": 27.73684,
-      "shotsAgainstPerGame": 31.21052,
-      "seasonId": 20252026
-    },
-    {
       "team": "Buffalo Sabres",
       "abbrev": "BUF",
       "wins": 7,
@@ -471,15 +471,15 @@
       "abbrev": "STL",
       "wins": 6,
       "losses": 9,
-      "ot": 4,
-      "points": 16,
-      "gamesPlayed": 19,
-      "pointPctg": 0.42105,
-      "goalDifferential": -20,
-      "goalsForPerGame": 2.78947,
-      "goalsAgainstPerGame": 3.8421,
-      "shotsForPerGame": 25.57894,
-      "shotsAgainstPerGame": 27.78947,
+      "ot": 5,
+      "points": 17,
+      "gamesPlayed": 20,
+      "pointPctg": 0.425,
+      "goalDifferential": -21,
+      "goalsForPerGame": 2.75,
+      "goalsAgainstPerGame": 3.8,
+      "shotsForPerGame": 25.75,
+      "shotsAgainstPerGame": 27.85,
       "seasonId": 20252026
     },
     {

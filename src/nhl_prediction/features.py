@@ -12,6 +12,7 @@ import pandas as pd
 
 ROLL_WINDOWS: Sequence[int] = (3, 5, 10)
 GOALIE_PULSE_PATH = Path(__file__).resolve().parents[2] / "web" / "src" / "data" / "goaliePulse.json"
+STARTING_GOALIE_PATH = Path(__file__).resolve().parents[2] / "web" / "src" / "data" / "startingGoalies.json"
 TREND_SCORE = {
     "surging": 1.0,
     "steady": 0.0,
@@ -106,6 +107,17 @@ def _load_goalie_pulse() -> dict[str, dict[str, float]]:
             continue
         result[team] = candidate
     return result
+
+
+@lru_cache(maxsize=1)
+def _load_starting_goalies() -> dict[str, dict[str, Any]]:
+    if not STARTING_GOALIE_PATH.exists():
+        return {}
+    try:
+        data = json.loads(STARTING_GOALIE_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return data.get("teams", {})
 
 
 def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = ROLL_WINDOWS) -> pd.DataFrame:
@@ -235,6 +247,16 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
     logs["line_top_pair_min"] = logs["lineTopPairSeconds"] / 60.0
     logs["line_forward_balance"] = logs["lineForwardConcentration"] - logs["lineDefenseConcentration"]
     logs["line_defense_balance"] = logs["lineDefenseConcentration"] - logs["lineForwardConcentration"]
+
+    # Goalie pulse projections
+    starting_map = _load_starting_goalies()
+    team_abbrevs = logs["teamAbbrev"].fillna("").str.upper()
+    logs["goalie_confirmed_start"] = team_abbrevs.map(
+        lambda abbr: float(bool(starting_map.get(abbr, {}).get("confirmedStart")))
+    )
+    logs["goalie_injury_flag"] = team_abbrevs.map(
+        lambda abbr: float(bool(starting_map.get(abbr, {}).get("statusCode")))
+    )
 
     # Goalie pulse projections
     pulse_map = _load_goalie_pulse()
