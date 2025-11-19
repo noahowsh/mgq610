@@ -2,12 +2,21 @@
 
 from __future__ import annotations
 
+import json
+from functools import lru_cache
+from pathlib import Path
 from typing import Iterable, Sequence
 
 import numpy as np
 import pandas as pd
 
 ROLL_WINDOWS: Sequence[int] = (3, 5, 10)
+GOALIE_PULSE_PATH = Path(__file__).resolve().parents[2] / "web" / "src" / "data" / "goaliePulse.json"
+TREND_SCORE = {
+    "surging": 1.0,
+    "steady": 0.0,
+    "cooling": -1.0,
+}
 
 
 def _lagged_rolling(group: pd.Series, window: int, min_periods: int = 1) -> pd.Series:
@@ -66,6 +75,37 @@ def _lagged_streak(series: pd.Series) -> pd.Series:
         streaks.append(current)
         current = current + 1 if value else 0
     return pd.Series(streaks, index=series.index)
+
+
+@lru_cache(maxsize=1)
+def _load_goalie_pulse() -> dict[str, dict[str, float]]:
+    if not GOALIE_PULSE_PATH.exists():
+        return {}
+    try:
+        data = json.loads(GOALIE_PULSE_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    goalies = data.get("goalies", [])
+    result: dict[str, dict[str, float]] = {}
+    for entry in goalies:
+        team = (entry.get("team") or "").strip().upper()
+        if not team:
+            continue
+        start_likelihood = float(entry.get("startLikelihood") or 0.0)
+        rest_days = float(entry.get("restDays") or 0.0)
+        rolling_gsa = float(entry.get("rollingGsa") or 0.0)
+        trend = TREND_SCORE.get((entry.get("trend") or "").lower(), 0.0)
+        candidate = {
+            "startLikelihood": start_likelihood,
+            "restDays": rest_days,
+            "rollingGsa": rolling_gsa,
+            "trendScore": trend,
+        }
+        existing = result.get(team)
+        if existing and existing["startLikelihood"] >= start_likelihood:
+            continue
+        result[team] = candidate
+    return result
 
 
 def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = ROLL_WINDOWS) -> pd.DataFrame:
@@ -195,6 +235,22 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
     logs["line_top_pair_min"] = logs["lineTopPairSeconds"] / 60.0
     logs["line_forward_balance"] = logs["lineForwardConcentration"] - logs["lineDefenseConcentration"]
     logs["line_defense_balance"] = logs["lineDefenseConcentration"] - logs["lineForwardConcentration"]
+
+    # Goalie pulse projections
+    pulse_map = _load_goalie_pulse()
+    team_abbrevs = logs["teamAbbrev"].fillna("").str.upper()
+    logs["goalie_start_likelihood"] = team_abbrevs.map(
+        lambda abbr: pulse_map.get(abbr, {}).get("startLikelihood", 0.0)
+    )
+    logs["goalie_rest_days"] = team_abbrevs.map(
+        lambda abbr: pulse_map.get(abbr, {}).get("restDays", 0.0)
+    )
+    logs["goalie_rolling_gsa"] = team_abbrevs.map(
+        lambda abbr: pulse_map.get(abbr, {}).get("rollingGsa", 0.0)
+    )
+    logs["goalie_trend_score"] = team_abbrevs.map(
+        lambda abbr: pulse_map.get(abbr, {}).get("trendScore", 0.0)
+    )
 
     # Goaltender derived stats
     if {"goalieShotsFaced", "goalieGoalsAllowed", "goalieXgAllowed"}.issubset(logs.columns):
@@ -359,6 +415,14 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
             "consecutive_home_prior",
             "consecutive_away_prior",
             "travel_burden",
+        ]
+    )
+    feature_cols.extend(
+        [
+            "goalie_start_likelihood",
+            "goalie_rest_days",
+            "goalie_rolling_gsa",
+            "goalie_trend_score",
         ]
     )
     feature_cols.extend(
