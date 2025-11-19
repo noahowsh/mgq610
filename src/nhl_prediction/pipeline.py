@@ -49,6 +49,12 @@ def build_dataset(seasons: Iterable[str]) -> Dataset:
         "line_top_pair_min",
         "line_forward_balance",
         "line_defense_balance",
+        "powerPlayPct",
+        "penaltyKillPct",
+        "powerPlayNetPct",
+        "penaltyKillNetPct",
+        "seasonPointPct",
+        "specialTeamEdge",
         "goalie_save_pct_game",
         "goalie_xg_saved",
         "goalie_shots_faced",
@@ -82,6 +88,12 @@ def build_dataset(seasons: Iterable[str]) -> Dataset:
                 f"rolling_goalie_save_pct_{window}",
                 f"rolling_goalie_xg_saved_{window}",
                 f"rolling_goalie_shots_faced_{window}",
+                f"rolling_powerPlayPct_{window}",
+                f"rolling_penaltyKillPct_{window}",
+                f"rolling_powerPlayNetPct_{window}",
+                f"rolling_penaltyKillNetPct_{window}",
+                f"rolling_seasonPointPct_{window}",
+                f"rolling_specialTeamEdge_{window}",
             ]
         )
 

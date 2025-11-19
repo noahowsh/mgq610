@@ -103,6 +103,11 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
         "goalieShotsFaced",
         "goalieGoalsAllowed",
         "goalieXgAllowed",
+        "powerPlayPct",
+        "penaltyKillPct",
+        "powerPlayNetPct",
+        "penaltyKillNetPct",
+        "seasonPointPct",
         "lineTopTrioSeconds",
         "lineTopPairSeconds",
         "lineForwardConcentration",
@@ -151,6 +156,21 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
     # Rest metrics (TRULY PRE-GAME: based on schedule)
     logs["rest_days"] = group["gameDate"].diff().dt.days
     logs["is_b2b"] = logs["rest_days"].fillna(10).le(1).astype(int)
+
+    # Special teams signal (power play vs penalty kill)
+    special_cols = [
+        "powerPlayPct",
+        "penaltyKillPct",
+        "powerPlayNetPct",
+        "penaltyKillNetPct",
+        "seasonPointPct",
+    ]
+    for special_col in special_cols:
+        if special_col in logs.columns:
+            logs[special_col] = pd.to_numeric(logs[special_col], errors="coerce").fillna(0.0)
+        else:
+            logs[special_col] = 0.0
+    logs["specialTeamEdge"] = logs["powerPlayPct"] - logs["penaltyKillPct"]
 
     # Altitude signals
     avg_altitude = np.mean(list(ALTITUDE_FEET_BY_TEAM.values()))
@@ -273,6 +293,18 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
             roll_features[f"rolling_goalie_shots_faced_{window}"] = group["goalie_shots_faced"].transform(
                 lambda s, w=window: _lagged_rolling(s, w)
             )
+        for special_col in [
+            "powerPlayPct",
+            "penaltyKillPct",
+            "powerPlayNetPct",
+            "penaltyKillNetPct",
+            "seasonPointPct",
+            "specialTeamEdge",
+        ]:
+            if special_col in logs.columns:
+                roll_features[f"rolling_{special_col}_{window}"] = group[special_col].transform(
+                    lambda s, w=window: _lagged_rolling(s, w)
+                )
 
     logs = logs.assign(**roll_features)
 
@@ -348,6 +380,16 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
             "goalie_save_pct_game",
             "goalie_xg_saved",
             "goalie_shots_faced",
+        ]
+    )
+    feature_cols.extend(
+        [
+            "powerPlayPct",
+            "penaltyKillPct",
+            "powerPlayNetPct",
+            "penaltyKillNetPct",
+            "seasonPointPct",
+            "specialTeamEdge",
         ]
     )
     
