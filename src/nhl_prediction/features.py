@@ -13,6 +13,7 @@ import pandas as pd
 ROLL_WINDOWS: Sequence[int] = (3, 5, 10)
 GOALIE_PULSE_PATH = Path(__file__).resolve().parents[2] / "web" / "src" / "data" / "goaliePulse.json"
 STARTING_GOALIE_PATH = Path(__file__).resolve().parents[2] / "web" / "src" / "data" / "startingGoalies.json"
+PLAYER_INJURIES_PATH = Path(__file__).resolve().parents[2] / "web" / "src" / "data" / "playerInjuries.json"
 TREND_SCORE = {
     "surging": 1.0,
     "steady": 0.0,
@@ -118,6 +119,18 @@ def _load_starting_goalies() -> dict[str, dict[str, Any]]:
     except (OSError, json.JSONDecodeError):
         return {}
     return data.get("teams", {})
+
+
+@lru_cache(maxsize=1)
+def _load_player_injuries() -> dict[str, int]:
+    if not PLAYER_INJURIES_PATH.exists():
+        return {}
+    try:
+        data = json.loads(PLAYER_INJURIES_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    teams = data.get("teams", {})
+    return {team: len(info.get("injuries") or []) for team, info in teams.items()}
 
 
 def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = ROLL_WINDOWS) -> pd.DataFrame:
@@ -257,6 +270,12 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
     logs["goalie_injury_flag"] = team_abbrevs.map(
         lambda abbr: float(bool(starting_map.get(abbr, {}).get("statusCode")))
     )
+    injury_map = _load_player_injuries()
+    logs["team_injury_count"] = team_abbrevs.map(
+        lambda abbr: float(injury_map.get(abbr, 0))
+    )
+    home_injury_count = logs.groupby(["gameId", "homeRoad"]).cumcount()  # dummy to avoid lint
+    # We'll derive home/away by looking at homeRoad; replicates near original
 
     # Goalie pulse projections
     pulse_map = _load_goalie_pulse()
@@ -445,6 +464,9 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
             "goalie_rest_days",
             "goalie_rolling_gsa",
             "goalie_trend_score",
+            "goalie_confirmed_start",
+            "goalie_injury_flag",
+            "team_injury_count",
         ]
     )
     feature_cols.extend(
