@@ -10,6 +10,12 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
   const favoriteTeam = prediction.modelFavorite === "home" ? prediction.homeTeam : prediction.awayTeam;
   const grade = getPredictionGrade(prediction.edge);
   const summary = normalizeSummaryWithGrade(prediction.summary, grade.label);
+  const dayOfInfo = prediction.dayOfInfo;
+  const homeGoalie = dayOfInfo?.homeGoalie;
+  const awayGoalie = dayOfInfo?.awayGoalie;
+  const homeInjuryCount = dayOfInfo?.homeInjuryCount ?? 0;
+  const awayInjuryCount = dayOfInfo?.awayInjuryCount ?? 0;
+  const totalInjuries = homeInjuryCount + awayInjuryCount;
 
   return (
     <article className="group rounded-3xl border border-white/10 bg-white/5 p-6 text-white shadow-2xl shadow-black/20 backdrop-blur transition hover:-translate-y-1 hover:shadow-black/40">
@@ -38,6 +44,29 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
         <ProbabilityBar label={`${prediction.homeTeam.name} (${prediction.homeTeam.abbrev})`} value={homePercent} highlight={prediction.modelFavorite === "home"} />
         <ProbabilityBar label={`${prediction.awayTeam.name} (${prediction.awayTeam.abbrev})`} value={awayPercent} highlight={prediction.modelFavorite === "away"} />
       </div>
+      {dayOfInfo && (
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          {homeGoalie && (
+            <StatusChip
+              label={`Home ${homeGoalie.goalieName ?? "goalie"} (${homeGoalie.confirmedStart ? "confirmed" : "projected"})`}
+              detail={homeGoalie.statusDescription ?? undefined}
+              tone={homeGoalie.confirmedStart ? "success" : homeGoalie.statusCode ? "warning" : "info"}
+            />
+          )}
+          {awayGoalie && (
+            <StatusChip
+              label={`Away ${awayGoalie.goalieName ?? "goalie"} (${awayGoalie.confirmedStart ? "confirmed" : "projected"})`}
+              detail={awayGoalie.statusDescription ?? undefined}
+              tone={awayGoalie.confirmedStart ? "success" : awayGoalie.statusCode ? "warning" : "info"}
+            />
+          )}
+          <StatusChip
+            label={`Injuries ${homeInjuryCount}/${awayInjuryCount}`}
+            tone={totalInjuries > 0 ? "warning" : "neutral"}
+            detail={totalInjuries > 0 ? "Lineup alert" : "Clean slate"}
+          />
+        </div>
+      )}
 
       <dl className="mt-6 space-y-3 text-sm text-white/80">
         <div>
@@ -75,6 +104,33 @@ function ProbabilityBar({
           style={{ width: `${value}%` }}
         />
       </div>
+    </div>
+  );
+}
+
+type StatusTone = "success" | "warning" | "info" | "neutral";
+
+function StatusChip({
+  label,
+  detail,
+  tone = "neutral",
+}: {
+  label: string;
+  detail?: string;
+  tone?: StatusTone;
+}) {
+  const toneStyles: Record<StatusTone, string> = {
+    success: "border-emerald-500/60 bg-emerald-500/5 text-emerald-300",
+    warning: "border-orange-500/60 bg-orange-500/5 text-orange-200",
+    info: "border-sky-500/60 bg-sky-500/5 text-sky-200",
+    neutral: "border-white/20 bg-white/5 text-white/70",
+  };
+  return (
+    <div
+      className={`inline-flex flex-col gap-0.5 rounded-full border px-4 py-1.5 text-[10px] font-semibold uppercase tracking-[0.3em] ${toneStyles[tone]}`}
+    >
+      <span className="text-[12px] font-bold uppercase tracking-[0.2em]">{label}</span>
+      {detail && <span className="text-[9px] font-normal lowercase tracking-[0.15em] text-white/60">{detail}</span>}
     </div>
   );
 }
