@@ -100,6 +100,9 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
         "fenwickPercentage",
         "team_save_pct",
         "team_gsax_per_60",
+        "goalieShotsFaced",
+        "goalieGoalsAllowed",
+        "goalieXgAllowed",
         "lineTopTrioSeconds",
         "lineTopPairSeconds",
         "lineForwardConcentration",
@@ -173,6 +176,19 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
     logs["line_forward_balance"] = logs["lineForwardConcentration"] - logs["lineDefenseConcentration"]
     logs["line_defense_balance"] = logs["lineDefenseConcentration"] - logs["lineForwardConcentration"]
 
+    # Goaltender derived stats
+    if {"goalieShotsFaced", "goalieGoalsAllowed", "goalieXgAllowed"}.issubset(logs.columns):
+        logs["goalie_save_pct_game"] = (
+            (logs["goalieShotsFaced"] - logs["goalieGoalsAllowed"])
+            / logs["goalieShotsFaced"].replace(0, np.nan)
+        ).fillna(0.0)
+        logs["goalie_xg_saved"] = (logs["goalieXgAllowed"] - logs["goalieGoalsAllowed"]).fillna(0.0)
+        logs["goalie_shots_faced"] = logs["goalieShotsFaced"].fillna(0.0)
+    else:
+        logs["goalie_save_pct_game"] = 0.0
+        logs["goalie_xg_saved"] = 0.0
+        logs["goalie_shots_faced"] = 0.0
+
     # Venue streaks derived from schedule (pre-game counts)
     logs["is_home"] = logs["homeRoad"].eq("H")
     logs["consecutive_home_prior"] = group["is_home"].transform(_lagged_streak)
@@ -223,18 +239,18 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
             roll_features[f"rolling_corsi_{window}"] = group["corsiPercentage"].transform(
                 lambda s, w=window: _lagged_rolling(s, w)
             ) / 100.0
-        
+
         if "fenwickPercentage" in logs.columns:
             roll_features[f"rolling_fenwick_{window}"] = group["fenwickPercentage"].transform(
                 lambda s, w=window: _lagged_rolling(s, w)
             ) / 100.0
-        
+
         # High danger shots rolling (NEW)
         if "highDangerShotsFor" in logs.columns:
             roll_features[f"rolling_high_danger_shots_{window}"] = group["highDangerShotsFor"].transform(
                 lambda s, w=window: _lagged_rolling(s, w)
             )
-        
+
         # Goaltending rolling (NEW - Season aggregate gets rolling average for stability)
         if "team_save_pct" in logs.columns:
             roll_features[f"rolling_save_pct_{window}"] = group["team_save_pct"].transform(
@@ -243,6 +259,18 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
         
         if "team_gsax_per_60" in logs.columns:
             roll_features[f"rolling_gsax_{window}"] = group["team_gsax_per_60"].transform(
+                lambda s, w=window: _lagged_rolling(s, w)
+            )
+        if "goalie_save_pct_game" in logs.columns:
+            roll_features[f"rolling_goalie_save_pct_{window}"] = group["goalie_save_pct_game"].transform(
+                lambda s, w=window: _lagged_rolling(s, w)
+            )
+        if "goalie_xg_saved" in logs.columns:
+            roll_features[f"rolling_goalie_xg_saved_{window}"] = group["goalie_xg_saved"].transform(
+                lambda s, w=window: _lagged_rolling(s, w)
+            )
+        if "goalie_shots_faced" in logs.columns:
+            roll_features[f"rolling_goalie_shots_faced_{window}"] = group["goalie_shots_faced"].transform(
                 lambda s, w=window: _lagged_rolling(s, w)
             )
 
@@ -313,6 +341,13 @@ def engineer_team_features(logs: pd.DataFrame, rolling_windows: Iterable[int] = 
             "line_top_pair_min",
             "line_forward_balance",
             "line_defense_balance",
+        ]
+    )
+    feature_cols.extend(
+        [
+            "goalie_save_pct_game",
+            "goalie_xg_saved",
+            "goalie_shots_faced",
         ]
     )
     

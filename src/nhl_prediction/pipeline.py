@@ -49,6 +49,9 @@ def build_dataset(seasons: Iterable[str]) -> Dataset:
         "line_top_pair_min",
         "line_forward_balance",
         "line_defense_balance",
+        "goalie_save_pct_game",
+        "goalie_xg_saved",
+        "goalie_shots_faced",
         # NEW: xGoals season averages
         "season_xg_for_avg",
         "season_xg_against_avg",
@@ -76,6 +79,9 @@ def build_dataset(seasons: Iterable[str]) -> Dataset:
                 # NEW: Goaltending metrics
                 f"rolling_save_pct_{window}",
                 f"rolling_gsax_{window}",
+                f"rolling_goalie_save_pct_{window}",
+                f"rolling_goalie_xg_saved_{window}",
+                f"rolling_goalie_shots_faced_{window}",
             ]
         )
 
